@@ -1,0 +1,18 @@
+﻿Setup Instructions
+====================================================================
+
+
+Create user secrets file with this format:
+{
+  "Twitch": {
+    "Token": "INSERT_YOUR_TOKEN_HERE"
+  }
+}
+
+
+NOTES
+========================================================================================
+- For your Twitch token, check https://dev.twitch.tv/docs/authentication and https://twitchapps.com/tmi/
+- In the appsettings.json
+    - ChannelName is your Twitch user/channel name, e.g. "CodingWithScott"
+    - BotAccountName is the Twitch account the bot is running under
