@@ -14,5 +14,5 @@ NOTES
 ========================================================================================
 - For your Twitch token, check https://dev.twitch.tv/docs/authentication and https://twitchapps.com/tmi/
 - In the appsettings.json
-    - ChannelName is your Twitch user/channel name, e.g. "CodingWithScott"
-    - BotAccountName is the Twitch account the bot is running under
+    - ChannelName: Twitch channel the bot will connect to, for example "CodingWithScott"
+    - BotAccountName: Twitch account the bot is connecting with, for example "CodingWithScottBot"
