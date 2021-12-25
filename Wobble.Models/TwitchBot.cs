@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace Wobble.Models
         }
 
         public ChatModes ChatMode { get; set; }
+
+        public ObservableCollection<Viewer> Viewers { get; } =
+            new ObservableCollection<Viewer>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -78,6 +82,8 @@ namespace Wobble.Models
             _client.OnNewSubscriber += HandleNewSubscriber;
             _client.OnRaidNotification += HandleRaidNotification;
             _client.OnReSubscriber += HandleReSubscriber;
+            _client.OnUserJoined += HandleUserJoined;
+            _client.OnUserLeft += HandleUserLeft;
         }
 
         public void UnsubscribeFromChannelEvents()
@@ -87,6 +93,8 @@ namespace Wobble.Models
             _client.OnNewSubscriber -= HandleNewSubscriber;
             _client.OnRaidNotification -= HandleRaidNotification;
             _client.OnReSubscriber -= HandleReSubscriber;
+            _client.OnUserJoined -= HandleUserJoined;
+            _client.OnUserLeft -= HandleUserLeft;
         }
 
         #endregion
@@ -184,13 +192,6 @@ namespace Wobble.Models
         {
         }
 
-        private string GetAvailableCommandsList()
-        {
-            return string.Join(", ",
-                    _twitchBotSettings.ChatCommands.Select(c => $"!{c.Command}"))
-                .ToLower(CultureInfo.InvariantCulture);
-        }
-
         private void HandleGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
             SendChatMessage($"Welcome to the channel {e.GiftedSubscription.MsgParamRecipientDisplayName}!");
@@ -215,7 +216,33 @@ namespace Wobble.Models
                 : $"{e.ReSubscriber.DisplayName}, thank you for re-subscribing!");
         }
 
-    #endregion
+        private void HandleUserJoined(object sender, OnUserJoinedArgs e)
+        {
+            Viewers.Add(new Viewer { Name = e.Username });
+        }
 
+        private void HandleUserLeft(object sender, OnUserLeftArgs e)
+        {
+            Viewer viewerToRemove = 
+                Viewers.FirstOrDefault(v => v.Name.Equals(e.Username, InvariantCultureIgnoreCase));
+
+            if (viewerToRemove != null)
+            {
+                Viewers.Remove(viewerToRemove);
+            }
+        }
+
+        #endregion
+
+        #region Private support methods
+
+        private string GetAvailableCommandsList()
+        {
+            return string.Join(", ",
+                    _twitchBotSettings.ChatCommands.Select(c => $"!{c.Command}"))
+                .ToLower(CultureInfo.InvariantCulture);
+        }
+
+        #endregion
     }
 }

@@ -9,7 +9,9 @@
         mc:Ignorable="d"
         FontSize="11pt"
         Title="Wobble"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="Height"
+        Width="545"
+        MinHeight="350">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -17,12 +19,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" MinWidth="200"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <Menu Grid.Row="0" Grid.Column="0"
-              Grid.ColumnSpan="2"
+              Grid.ColumnSpan="3"
               FontSize="11pt">
             <MenuItem Header="File">
                 <MenuItem Header="Exit"
@@ -37,8 +40,39 @@
             </MenuItem>
         </Menu>
 
-        <!-- Radio Button Controls -->
+        <!-- Viewer List -->
         <Grid Grid.Row="1" Grid.Column="0"
+              Margin="10,10,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <DataGrid Grid.Row="0" Grid.Column="0"
+                      AutoGenerateColumns="False"
+                      ItemsSource="{Binding Viewers}"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserSortColumns="False"
+                      HeadersVisibility="Column"
+                      VerticalScrollBarVisibility="Auto">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Viewers"
+                                        Binding="{Binding Name}"
+                                        MinWidth="180"/>
+                </DataGrid.Columns>
+
+            </DataGrid>
+        </Grid>
+
+        <!-- Radio Button Controls -->
+        <Grid Grid.Row="1" Grid.Column="1"
               Margin="10,10,10,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -117,7 +151,7 @@
         </Grid>
 
         <!-- Button Controls -->
-        <Grid Grid.Row="1" Grid.Column="1"
+        <Grid Grid.Row="1" Grid.Column="2"
               Margin="10,10,10,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -140,6 +174,7 @@
                     Content="Clear Chat"
                     Click="ClearChat_OnClick"/>
         </Grid>
+
     </Grid>
 
 </Window>
