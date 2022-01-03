@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Wobble.Core\Wobble.Core.csproj" />
     <ProjectReference Include="..\Wobble.Models\Wobble.Models.csproj" />
     <ProjectReference Include="..\Wobble.Services\Wobble.Services.csproj" />
   </ItemGroup>

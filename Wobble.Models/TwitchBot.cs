@@ -9,6 +9,7 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
+using Wobble.Core;
 using static System.StringComparison;
 
 namespace Wobble.Models
@@ -20,6 +21,9 @@ namespace Wobble.Models
         private readonly TwitchClient _client = new();
         private readonly BotSettings _twitchBotSettings;
         private readonly ConnectionCredentials _credentials;
+
+        private readonly RockPaperScissorsGame _rockPaperScissorsGame =
+            new RockPaperScissorsGame();
 
         public enum ChatModes
         {
@@ -174,6 +178,10 @@ namespace Wobble.Models
             if (e.Command.CommandText.StartsWith("command", InvariantCultureIgnoreCase))
             {
                 DisplayCommands();
+            }
+            else if (_rockPaperScissorsGame.Options.Any(o => o.Matches(e.Command.CommandText)))
+            {
+                SendChatMessage(_rockPaperScissorsGame.GetGameResult(_credentials.TwitchUsername, e.Command.CommandText));
             }
             else
             {

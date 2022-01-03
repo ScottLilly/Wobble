@@ -13,4 +13,8 @@
     <PackageReference Include="TwitchLib" Version="3.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Wobble.Core\Wobble.Core.csproj" />
+  </ItemGroup>
+
 </Project>
