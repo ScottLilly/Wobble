@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
 {
-    internal class Roller
+    internal class Roller : IChatCommand
     {
-        internal string GetResult(string arguments)
+        public string CommandName => "Roller";
+
+        public List<string> CommandTriggers =>
+            new List<string> {"roll"};
+
+        string IChatCommand.GetResult(string arguments)
         {
             // If empty, default to 1-10
             if (string.IsNullOrWhiteSpace(arguments))

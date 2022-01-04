@@ -27,9 +27,6 @@ namespace Wobble.Models
         private readonly List<IChatCommand> _chatCommands =
             new List<IChatCommand>();
 
-        private readonly RockPaperScissorsGame _rockPaperScissorsGame;
-        private readonly Roller _roller;
-
         public enum ChatModes
         {
             Everyone,
@@ -50,11 +47,10 @@ namespace Wobble.Models
 
             _chatCommands.Add(new ChoiceMaker());
             _chatCommands.Add(new MagicEightBall());
+            _chatCommands.Add(new Roller());
+            _chatCommands.Add(new RockPaperScissorsGame(twitchBotSettings.BotDisplayName));
 
             _twitchBotSettings = twitchBotSettings;
-            _rockPaperScissorsGame =
-                new RockPaperScissorsGame(_twitchBotSettings.BotDisplayName);
-            _roller = new Roller();
 
             _credentials =
                 new ConnectionCredentials(
@@ -187,21 +183,17 @@ namespace Wobble.Models
             {
                 DisplayCommands();
             }
-            else if (e.Command.CommandText.Matches("roll"))
-            {
-                SendChatMessage(_roller.GetResult(e.Command.ArgumentsAsString));
-            }
-            else if (_rockPaperScissorsGame.Options.Any(o => o.Matches(e.Command.CommandText)))
-            {
-                SendChatMessage(_rockPaperScissorsGame.GetGameResult(e.Command.CommandText));
-            }
             else
             {
                 var command =
                     _chatCommands.FirstOrDefault(cc =>
                         cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
 
-                if (command != null)
+                if (command is RockPaperScissorsGame)
+                {
+                    SendChatMessage(command.GetResult(e.Command.CommandText));
+                }
+                else if (command != null)
                 {
                     SendChatMessage(command.GetResult(e.Command.ArgumentsAsString));
                 }

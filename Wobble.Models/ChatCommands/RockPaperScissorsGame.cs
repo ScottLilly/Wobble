@@ -3,33 +3,34 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
 {
-    internal class RockPaperScissorsGame
+    public class RockPaperScissorsGame : IChatCommand
     {
         private readonly string _botDisplayName;
 
-        internal List<string> Options { get; } =
+        public string CommandName => "RockPaperScissorsGame";
+        public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };
 
-        internal RockPaperScissorsGame(string botDisplayName)
+        public RockPaperScissorsGame(string botDisplayName)
         {
             _botDisplayName = botDisplayName;
         }
 
-        internal string GetGameResult(string viewerOption)
+        public string GetResult(string arguments = "")
         {
             string botOption =
-                Options[RandomNumberGenerator.NumberBetween(0, Options.Count - 1)];
+                CommandTriggers[RandomNumberGenerator.NumberBetween(0, CommandTriggers.Count - 1)];
 
             string botChoiceMessage = $"{_botDisplayName} chose {botOption}.";
 
-            if (viewerOption.Matches(botOption))
+            if (arguments.Matches(botOption))
             {
                 return $"{botChoiceMessage} You tied. :/";
             }
 
-            if ((viewerOption.Matches("rock") && botOption.Matches("scissors")) ||
-                (viewerOption.Matches("paper") && botOption.Matches("rock")) ||
-                (viewerOption.Matches("scissors") && botOption.Matches("paper")))
+            if ((arguments.Matches("rock") && botOption.Matches("scissors")) ||
+                (arguments.Matches("paper") && botOption.Matches("rock")) ||
+                (arguments.Matches("scissors") && botOption.Matches("paper")))
             {
                 return $"{botChoiceMessage} You won! :D";
             }
