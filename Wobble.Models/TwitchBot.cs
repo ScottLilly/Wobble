@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace Wobble.Models
 {
     public class TwitchBot : INotifyPropertyChanged
     {
-        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 10, 0);
+        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 1, 0);
 
         private readonly TwitchClient _client = new();
         private readonly BotSettings _twitchBotSettings;
@@ -31,9 +30,6 @@ namespace Wobble.Models
         }
 
         public ChatModes ChatMode { get; set; }
-
-        public ObservableCollection<Viewer> Viewers { get; } =
-            new ObservableCollection<Viewer>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -155,11 +151,6 @@ namespace Wobble.Models
             _client.ClearChat(_twitchBotSettings.ChannelName);
         }
 
-        public void SendChatMessage(string message)
-        {
-            _client.SendMessage(_twitchBotSettings.ChannelName, message);
-        }
-
         #endregion
 
         #region Twitch EventHandler methods
@@ -226,23 +217,20 @@ namespace Wobble.Models
 
         private void HandleUserJoined(object sender, OnUserJoinedArgs e)
         {
-            Viewers.Add(new Viewer { Name = e.Username });
         }
 
         private void HandleUserLeft(object sender, OnUserLeftArgs e)
         {
-            Viewer viewerToRemove = 
-                Viewers.FirstOrDefault(v => v.Name.Equals(e.Username, InvariantCultureIgnoreCase));
-
-            if (viewerToRemove != null)
-            {
-                Viewers.Remove(viewerToRemove);
-            }
         }
 
         #endregion
 
         #region Private support methods
+
+        private void SendChatMessage(string message)
+        {
+            _client.SendMessage(_twitchBotSettings.ChannelName, message);
+        }
 
         private string GetAvailableCommandsList()
         {

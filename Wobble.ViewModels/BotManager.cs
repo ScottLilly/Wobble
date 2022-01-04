@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Wobble.Models;
 
 namespace Wobble.ViewModels
@@ -7,8 +6,6 @@ namespace Wobble.ViewModels
     public class BotManager : INotifyPropertyChanged
     {
         private readonly TwitchBot _twitchBot;
-
-        public ObservableCollection<Viewer> Viewers => _twitchBot.Viewers;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
