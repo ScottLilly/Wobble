@@ -235,7 +235,8 @@ namespace Wobble.Models
         private string GetAvailableCommandsList()
         {
             return string.Join(", ",
-                    _twitchBotSettings.ChatCommands.Select(c => $"!{c.Command}"))
+                    _twitchBotSettings.ChatCommands.OrderBy(c => c.Command)
+                        .Select(c => $"!{c.Command}"))
                 .ToLower(CultureInfo.InvariantCulture);
         }
 

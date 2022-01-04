@@ -24,17 +24,17 @@ namespace Wobble.Models
 
             if (viewerOption.Matches(botOption))
             {
-                return $"{botChoiceMessage} It was a tie";
+                return $"{botChoiceMessage} You tied. :/";
             }
 
             if ((viewerOption.Matches("rock") && botOption.Matches("scissors")) ||
                 (viewerOption.Matches("paper") && botOption.Matches("rock")) ||
                 (viewerOption.Matches("scissors") && botOption.Matches("paper")))
             {
-                return $"{botChoiceMessage} You won!";
+                return $"{botChoiceMessage} You won! :D";
             }
 
-            return $"{botChoiceMessage} You lost :(";
+            return $"{botChoiceMessage} You lost. :(";
         }
     }
 }
