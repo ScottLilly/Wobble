@@ -28,7 +28,6 @@ namespace Wobble.Models
             new List<IChatCommand>();
 
         private readonly RockPaperScissorsGame _rockPaperScissorsGame;
-        private readonly MagicEightBall _magicEightBall;
         private readonly Roller _roller;
 
         public enum ChatModes
@@ -50,11 +49,11 @@ namespace Wobble.Models
             }
 
             _chatCommands.Add(new ChoiceMaker());
+            _chatCommands.Add(new MagicEightBall());
 
             _twitchBotSettings = twitchBotSettings;
             _rockPaperScissorsGame =
                 new RockPaperScissorsGame(_twitchBotSettings.BotDisplayName);
-            _magicEightBall = new MagicEightBall();
             _roller = new Roller();
 
             _credentials =
@@ -191,11 +190,6 @@ namespace Wobble.Models
             else if (e.Command.CommandText.Matches("roll"))
             {
                 SendChatMessage(_roller.GetResult(e.Command.ArgumentsAsString));
-            }
-            else if (e.Command.CommandText.Matches("8ball") ||
-                     e.Command.CommandText.Matches("eightball"))
-            {
-                SendChatMessage(_magicEightBall.GetResponse());
             }
             else if (_rockPaperScissorsGame.Options.Any(o => o.Matches(e.Command.CommandText)))
             {

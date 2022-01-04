@@ -3,9 +3,13 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
 {
-    internal class MagicEightBall
+    internal class MagicEightBall : IChatCommand
     {
         private readonly List<string> _results;
+
+        public string CommandName => "MagicEightBall";
+        public List<string> CommandTriggers =>
+            new List<string> {"8ball", "eightball", "magiceightball"};
 
         internal MagicEightBall()
         {
@@ -33,8 +37,7 @@ namespace Wobble.Models.ChatCommands
                 "Very doubtful"
             };
         }
-
-        internal string GetResponse()
+        public string GetResult(string arguments = "")
         {
             int index = RandomNumberGenerator.NumberBetween(0, _results.Count - 1);
 
