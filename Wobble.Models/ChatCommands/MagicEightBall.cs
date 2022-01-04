@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Wobble.Core;
 
-namespace Wobble.Models
+namespace Wobble.Models.ChatCommands
 {
     internal class MagicEightBall
     {

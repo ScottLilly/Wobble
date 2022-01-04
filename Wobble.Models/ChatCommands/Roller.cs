@@ -1,7 +1,7 @@
 ﻿using System;
 using Wobble.Core;
 
-namespace Wobble.Models
+namespace Wobble.Models.ChatCommands
 {
     internal class Roller
     {

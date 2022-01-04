@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -9,7 +10,9 @@ using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
 using Wobble.Core;
+using Wobble.Models.ChatCommands;
 using static System.StringComparison;
+using ChatCommand = Wobble.Models.ChatCommands.ChatCommand;
 
 namespace Wobble.Models
 {
@@ -21,9 +24,11 @@ namespace Wobble.Models
         private readonly BotSettings _twitchBotSettings;
         private readonly ConnectionCredentials _credentials;
 
+        private readonly List<IChatCommand> _chatCommands =
+            new List<IChatCommand>();
+
         private readonly RockPaperScissorsGame _rockPaperScissorsGame;
         private readonly MagicEightBall _magicEightBall;
-        private readonly ChoiceMaker _choiceMaker;
         private readonly Roller _roller;
 
         public enum ChatModes
@@ -39,11 +44,17 @@ namespace Wobble.Models
 
         public TwitchBot(BotSettings twitchBotSettings)
         {
+            foreach (ChatCommand chatCommand in twitchBotSettings.ChatCommands)
+            {
+                _chatCommands.Add(chatCommand);
+            }
+
+            _chatCommands.Add(new ChoiceMaker());
+
             _twitchBotSettings = twitchBotSettings;
             _rockPaperScissorsGame =
                 new RockPaperScissorsGame(_twitchBotSettings.BotDisplayName);
             _magicEightBall = new MagicEightBall();
-            _choiceMaker = new ChoiceMaker();
             _roller = new Roller();
 
             _credentials =
@@ -181,10 +192,6 @@ namespace Wobble.Models
             {
                 SendChatMessage(_roller.GetResult(e.Command.ArgumentsAsString));
             }
-            else if (e.Command.CommandText.Matches("choose"))
-            {
-                SendChatMessage(_choiceMaker.ChooseFrom(e.Command.ArgumentsAsString));
-            }
             else if (e.Command.CommandText.Matches("8ball") ||
                      e.Command.CommandText.Matches("eightball"))
             {
@@ -196,13 +203,13 @@ namespace Wobble.Models
             }
             else
             {
-                ChatCommand chatCommand =
-                    _twitchBotSettings.ChatCommands.FirstOrDefault(cc =>
-                        cc.Command.Equals(e.Command.CommandText, InvariantCultureIgnoreCase));
+                var command =
+                    _chatCommands.FirstOrDefault(cc =>
+                        cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
 
-                if (chatCommand != null)
+                if (command != null)
                 {
-                    SendChatMessage(chatCommand.Text);
+                    SendChatMessage(command.GetResult(e.Command.ArgumentsAsString));
                 }
             }
         }
@@ -255,8 +262,8 @@ namespace Wobble.Models
         private string GetAvailableCommandsList()
         {
             return string.Join(", ",
-                    _twitchBotSettings.ChatCommands.OrderBy(c => c.Command)
-                        .Select(c => $"!{c.Command}"))
+                    _twitchBotSettings.ChatCommands.OrderBy(c => c.CommandName)
+                        .Select(c => $"!{c.CommandName}"))
                 .ToLower(CultureInfo.InvariantCulture);
         }
 

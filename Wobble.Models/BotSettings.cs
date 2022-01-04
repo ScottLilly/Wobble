@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Wobble.Models.ChatCommands;
 
 namespace Wobble.Models
 {
@@ -28,7 +29,7 @@ namespace Wobble.Models
                     int lastColonIndex = key.LastIndexOf(":", StringComparison.InvariantCultureIgnoreCase);
                     string keywords = key.Substring(lastColonIndex + 1);
 
-                    ChatCommands.Add(new ChatCommand { Command = keywords, Text = value });
+                    ChatCommands.Add(new ChatCommand(keywords, value));
                 }
                 else
                 {
