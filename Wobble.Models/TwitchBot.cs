@@ -20,7 +20,9 @@ namespace Wobble.Models
         private readonly TwitchClient _client = new();
         private readonly BotSettings _twitchBotSettings;
         private readonly ConnectionCredentials _credentials;
+
         private readonly RockPaperScissorsGame _rockPaperScissorsGame;
+        private readonly MagicEightBall _magicEightBall;
 
         public enum ChatModes
         {
@@ -36,8 +38,9 @@ namespace Wobble.Models
         public TwitchBot(BotSettings twitchBotSettings)
         {
             _twitchBotSettings = twitchBotSettings;
-            _rockPaperScissorsGame = 
+            _rockPaperScissorsGame =
                 new RockPaperScissorsGame(_twitchBotSettings.BotDisplayName);
+            _magicEightBall = new MagicEightBall();
 
             _credentials =
                 new ConnectionCredentials(
@@ -169,6 +172,11 @@ namespace Wobble.Models
             if (e.Command.CommandText.StartsWith("command", InvariantCultureIgnoreCase))
             {
                 DisplayCommands();
+            }
+            else if (e.Command.CommandText.Matches("8ball") ||
+                     e.Command.CommandText.Matches("eightball"))
+            {
+                SendChatMessage(_magicEightBall.GetResponse());
             }
             else if (_rockPaperScissorsGame.Options.Any(o => o.Matches(e.Command.CommandText)))
             {
