@@ -1,2 +1,4 @@
 # Wobble
-Twitch stream manager
+Twitch chat bot and stream manager
+
+Written in C# and WPF
