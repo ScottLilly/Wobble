@@ -11,6 +11,7 @@ namespace Wobble.Models
 
         public string ChannelName => _values["Twitch:ChannelName"];
         public string BotAccountName => _values["Twitch:BotAccountName"];
+        public string BotDisplayName => _values["Twitch:BotDisplayName"];
         public string Token => _values["Twitch:Token"];
         public bool HandleAlerts => Convert.ToBoolean(_values["Twitch:HandleAlerts"] ?? "false");
 
@@ -24,7 +25,7 @@ namespace Wobble.Models
             {
                 if (key.StartsWith("Twitch:ChatCommands"))
                 {
-                    int lastColonIndex = key.LastIndexOf(":");
+                    int lastColonIndex = key.LastIndexOf(":", StringComparison.InvariantCultureIgnoreCase);
                     string keywords = key.Substring(lastColonIndex + 1);
 
                     ChatCommands.Add(new ChatCommand { Command = keywords, Text = value });

@@ -21,9 +21,7 @@ namespace Wobble.Models
         private readonly TwitchClient _client = new();
         private readonly BotSettings _twitchBotSettings;
         private readonly ConnectionCredentials _credentials;
-
-        private readonly RockPaperScissorsGame _rockPaperScissorsGame =
-            new RockPaperScissorsGame();
+        private readonly RockPaperScissorsGame _rockPaperScissorsGame;
 
         public enum ChatModes
         {
@@ -42,6 +40,8 @@ namespace Wobble.Models
         public TwitchBot(BotSettings twitchBotSettings)
         {
             _twitchBotSettings = twitchBotSettings;
+            _rockPaperScissorsGame = 
+                new RockPaperScissorsGame(_twitchBotSettings.BotDisplayName);
 
             _credentials =
                 new ConnectionCredentials(
@@ -181,7 +181,7 @@ namespace Wobble.Models
             }
             else if (_rockPaperScissorsGame.Options.Any(o => o.Matches(e.Command.CommandText)))
             {
-                SendChatMessage(_rockPaperScissorsGame.GetGameResult(_credentials.TwitchUsername, e.Command.CommandText));
+                SendChatMessage(_rockPaperScissorsGame.GetGameResult(e.Command.CommandText));
             }
             else
             {

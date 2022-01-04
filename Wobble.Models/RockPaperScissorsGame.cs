@@ -5,15 +5,22 @@ namespace Wobble.Models
 {
     internal class RockPaperScissorsGame
     {
+        private readonly string _botDisplayName;
+
         internal List<string> Options { get; } =
             new List<string> { "rock", "paper", "scissors" };
 
-        internal string GetGameResult(string botName, string viewerOption)
+        internal RockPaperScissorsGame(string botDisplayName)
+        {
+            _botDisplayName = botDisplayName;
+        }
+
+        internal string GetGameResult(string viewerOption)
         {
             string botOption =
                 Options[RandomNumberGenerator.NumberBetween(0, Options.Count - 1)];
 
-            string botChoiceMessage = $"{botName} chose {botOption}.";
+            string botChoiceMessage = $"{_botDisplayName} chose {botOption}.";
 
             if (viewerOption.Matches(botOption))
             {
