@@ -15,4 +15,5 @@ NOTES
 - For your Twitch token, check https://dev.twitch.tv/docs/authentication and https://twitchapps.com/tmi/
 - In the appsettings.json
     - ChannelName: Twitch channel the bot will connect to, for example "CodingWithScott"
-    - BotAccountName: Twitch account the bot is connecting with, for example "CodingWithScottBot"
+    - BotAccountName: Twitch account the bot is connecting with, for example "codingwithscottbot"
+    - BotDisplayName: Name to display in chat for bot messages, for example "CodingWithScottBot"
