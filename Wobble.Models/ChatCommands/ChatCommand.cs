@@ -1,24 +1,30 @@
 ﻿using System.Collections.Generic;
+using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
 {
     public class ChatCommand : IChatCommand
     {
-        private readonly string _response;
+        private readonly List<string> _responses;
 
         public List<string> CommandTriggers { get; set; } =
             new List<string>();
 
-        public ChatCommand(string commandName, string response)
+        public ChatCommand(List<string> commandTriggers, List<string> responses)
         {
-            CommandTriggers.Add(commandName);
-            _response = response;
+            CommandTriggers = commandTriggers;
+            _responses = responses;
         }
 
         public string GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments = "")
         {
-            return _response;
+            if (_responses.Count == 0)
+            {
+                return "";
+            }
+
+            return _responses[RandomNumberGenerator.NumberBetween(0, _responses.Count - 1)];
         }
     }
 }

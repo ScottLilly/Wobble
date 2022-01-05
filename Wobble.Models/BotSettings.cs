@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Wobble.Models.ChatCommands;
 
@@ -10,31 +9,28 @@ namespace Wobble.Models
         private readonly Dictionary<string, string> _values =
             new Dictionary<string, string>();
 
-        public string ChannelName => _values["Twitch:ChannelName"];
-        public string BotAccountName => _values["Twitch:BotAccountName"];
-        public string BotDisplayName => _values["Twitch:BotDisplayName"];
-        public string Token => _values["Twitch:Token"];
-        public bool HandleAlerts => Convert.ToBoolean(_values["Twitch:HandleAlerts"] ?? "false");
+        public string ChannelName { get; }
+        public string BotAccountName { get; }
+        public string BotDisplayName { get; }
+        public bool HandleAlerts { get; }
+        public string Token { get; }
 
         public List<ChatCommand> ChatCommands { get; }
 
-        public BotSettings(IEnumerable<KeyValuePair<string, string>> configuration)
+        public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
         {
+            ChannelName = ts.ChannelName;
+            BotAccountName = ts.BotAccountName;
+            BotDisplayName = ts.BotDisplayName;
+            HandleAlerts = ts.HandleAlerts;
+
+            Token = configuration.First(c => c.Key == "Twitch:Token").Value;
+
             ChatCommands = new List<ChatCommand>();
 
-            foreach ((string key, string value) in configuration.Where(c => c.Value != null))
+            foreach (Command command in ts.Commands)
             {
-                if (key.StartsWith("Twitch:ChatCommands"))
-                {
-                    int lastColonIndex = key.LastIndexOf(":", StringComparison.InvariantCultureIgnoreCase);
-                    string keywords = key.Substring(lastColonIndex + 1);
-
-                    ChatCommands.Add(new ChatCommand(keywords, value));
-                }
-                else
-                {
-                    _values.TryAdd(key, value);
-                }
+                ChatCommands.Add(new ChatCommand(command.TriggerWords, command.Responses));
             }
         }
     }

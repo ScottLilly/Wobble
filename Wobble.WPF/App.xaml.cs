@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Wobble.Models;
 using Wobble.WPF.Windows;
 
@@ -24,7 +25,10 @@ namespace Wobble.WPF
 
             Configuration = builder.Build();
 
-            _twitchBotSettings = new BotSettings(Configuration.AsEnumerable());
+            string settings = File.ReadAllText("appsettings.json");
+            var ts = JsonConvert.DeserializeObject<TwitchSettings>(settings);
+
+            _twitchBotSettings = new BotSettings(ts, Configuration.AsEnumerable());
 
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
