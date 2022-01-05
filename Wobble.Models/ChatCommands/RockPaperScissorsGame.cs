@@ -5,36 +5,30 @@ namespace Wobble.Models.ChatCommands
 {
     public class RockPaperScissorsGame : IChatCommand
     {
-        private readonly string _botDisplayName;
-
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };
 
-        public RockPaperScissorsGame(string botDisplayName)
-        {
-            _botDisplayName = botDisplayName;
-        }
-
-        public string GetResult(string arguments = "")
+        public string GetResult(string botDisplayName, string chatterDisplayName,
+            string commandTriggerWord, string arguments = "")
         {
             string botOption =
                 CommandTriggers[RandomNumberGenerator.NumberBetween(0, CommandTriggers.Count - 1)];
 
-            string botChoiceMessage = $"{_botDisplayName} chose {botOption}.";
+            string botChoiceMessage = $"{botDisplayName} chose {botOption}.";
 
-            if (arguments.Matches(botOption))
+            if (commandTriggerWord.Matches(botOption))
             {
-                return $"{botChoiceMessage} You tied. :/";
+                return $"{botChoiceMessage} {chatterDisplayName} tied. :/";
             }
 
-            if ((arguments.Matches("rock") && botOption.Matches("scissors")) ||
-                (arguments.Matches("paper") && botOption.Matches("rock")) ||
-                (arguments.Matches("scissors") && botOption.Matches("paper")))
+            if ((commandTriggerWord.Matches("rock") && botOption.Matches("scissors")) ||
+                (commandTriggerWord.Matches("paper") && botOption.Matches("rock")) ||
+                (commandTriggerWord.Matches("scissors") && botOption.Matches("paper")))
             {
-                return $"{botChoiceMessage} You won! :D";
+                return $"{botChoiceMessage} {chatterDisplayName} won! :D";
             }
 
-            return $"{botChoiceMessage} You lost. :(";
+            return $"{botChoiceMessage} {chatterDisplayName} lost. :(";
         }
     }
 }

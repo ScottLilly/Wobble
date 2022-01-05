@@ -47,7 +47,7 @@ namespace Wobble.Models
             _chatCommands.Add(new ChoiceMaker());
             _chatCommands.Add(new MagicEightBall());
             _chatCommands.Add(new Roller());
-            _chatCommands.Add(new RockPaperScissorsGame(twitchBotSettings.BotDisplayName));
+            _chatCommands.Add(new RockPaperScissorsGame());
 
             _twitchBotSettings = twitchBotSettings;
 
@@ -188,13 +188,10 @@ namespace Wobble.Models
                     _chatCommands.FirstOrDefault(cc =>
                         cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
 
-                if (command is RockPaperScissorsGame)
+                if (command != null)
                 {
-                    SendChatMessage(command.GetResult(e.Command.CommandText));
-                }
-                else if (command != null)
-                {
-                    SendChatMessage(command.GetResult(e.Command.ArgumentsAsString));
+                    SendChatMessage(command.GetResult(_twitchBotSettings.BotDisplayName, 
+                        e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
                 }
             }
         }

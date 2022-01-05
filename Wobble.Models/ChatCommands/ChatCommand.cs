@@ -15,7 +15,8 @@ namespace Wobble.Models.ChatCommands
             _response = response;
         }
 
-        public string GetResult(string arguments = "")
+        public string GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+            string arguments = "")
         {
             return _response;
         }

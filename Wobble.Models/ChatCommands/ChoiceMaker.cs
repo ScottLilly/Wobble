@@ -8,7 +8,8 @@ namespace Wobble.Models.ChatCommands
         public List<string> CommandTriggers =>
             new List<string> { "Choose" };
 
-        public string GetResult(string arguments)
+        public string GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+            string arguments)
         {
             // Handle null or empty arguments
             if (arguments == null || string.IsNullOrWhiteSpace(arguments))

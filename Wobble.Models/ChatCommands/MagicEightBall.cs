@@ -36,7 +36,8 @@ namespace Wobble.Models.ChatCommands
                 "Very doubtful"
             };
         }
-        public string GetResult(string arguments = "")
+        public string GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+            string arguments = "")
         {
             int index = RandomNumberGenerator.NumberBetween(0, _results.Count - 1);
 
