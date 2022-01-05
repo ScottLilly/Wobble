@@ -6,8 +6,6 @@ namespace Wobble.Models.ChatCommands
 {
     internal class Roller : IChatCommand
     {
-        public string CommandName => "Roller";
-
         public List<string> CommandTriggers =>
             new List<string> {"roll"};
 

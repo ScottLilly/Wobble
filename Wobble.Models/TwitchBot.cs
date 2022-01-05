@@ -9,7 +9,6 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
-using Wobble.Core;
 using Wobble.Models.ChatCommands;
 using static System.StringComparison;
 using ChatCommand = Wobble.Models.ChatCommands.ChatCommand;
@@ -247,10 +246,18 @@ namespace Wobble.Models
 
         private string GetAvailableCommandsList()
         {
-            return string.Join(", ",
-                    _twitchBotSettings.ChatCommands.OrderBy(c => c.CommandName)
-                        .Select(c => $"!{c.CommandName}"))
+            List<string> triggerWords = new List<string>();
+
+            foreach (IChatCommand chatCommand in _chatCommands)
+            {
+                triggerWords.AddRange(chatCommand.CommandTriggers.Select(ct => $"!{ct}"));
+            }
+
+            var availableCommandsList = string.Join(", ",
+                    triggerWords.OrderBy(ctw => ctw))
                 .ToLower(CultureInfo.InvariantCulture);
+
+            return availableCommandsList;
         }
 
         #endregion

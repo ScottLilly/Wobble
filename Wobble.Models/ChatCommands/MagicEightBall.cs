@@ -7,9 +7,8 @@ namespace Wobble.Models.ChatCommands
     {
         private readonly List<string> _results;
 
-        public string CommandName => "MagicEightBall";
         public List<string> CommandTriggers =>
-            new List<string> {"8ball", "eightball", "magiceightball"};
+            new List<string> { "8ball" };
 
         internal MagicEightBall()
         {

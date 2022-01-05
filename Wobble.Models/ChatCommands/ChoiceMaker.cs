@@ -5,7 +5,6 @@ namespace Wobble.Models.ChatCommands
 {
     internal class ChoiceMaker : IChatCommand
     {
-        public string CommandName => "ChoiceMaker";
         public List<string> CommandTriggers =>
             new List<string> { "Choose" };
 

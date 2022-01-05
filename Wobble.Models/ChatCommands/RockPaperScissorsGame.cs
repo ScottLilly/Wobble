@@ -7,7 +7,6 @@ namespace Wobble.Models.ChatCommands
     {
         private readonly string _botDisplayName;
 
-        public string CommandName => "RockPaperScissorsGame";
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };
 
