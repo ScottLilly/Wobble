@@ -45,7 +45,6 @@ namespace Wobble.Models
             }
 
             _chatCommands.Add(new ChoiceMaker());
-            _chatCommands.Add(new MagicEightBall());
             _chatCommands.Add(new Roller());
             _chatCommands.Add(new RockPaperScissorsGame());
 
