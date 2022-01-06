@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using Wobble.Core;
 
-namespace Wobble.Models.ChatCommands
+namespace Wobble.Models.ChatCommandHandlers
 {
-    internal class Roller : IChatCommand
+    internal class Roller : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> {"roll"};
 
-        string IChatCommand.GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+        string IChatCommandHandler.GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments)
         {
             // If empty, default to 1-10

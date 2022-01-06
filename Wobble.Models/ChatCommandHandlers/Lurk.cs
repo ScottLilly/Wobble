@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Wobble.Models.ChatCommands
+namespace Wobble.Models.ChatCommandHandlers
 {
-    public class Lurk : IChatCommand
+    public class Lurk : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "Lurk" };

@@ -2,9 +2,9 @@
 using System.Linq;
 using Wobble.Core;
 
-namespace Wobble.Models.ChatCommands
+namespace Wobble.Models.ChatCommandHandlers
 {
-    internal class ChoiceMaker : IChatCommand
+    internal class ChoiceMaker : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "Choose" };

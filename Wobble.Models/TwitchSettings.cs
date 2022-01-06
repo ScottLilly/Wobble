@@ -7,12 +7,12 @@ namespace Wobble.Models
         public string ChannelName { get; set; }
         public string BotAccountName { get; set; }
         public string BotDisplayName { get; set; }
-        public bool HandleAlerts { get; set; }
-        public List<Command> Commands { get; set; }
+        public bool HandleHostRaidSubscriptionEvents { get; set; }
+        public List<ChatMessage> ChatMessages { get; set; }
         public TimedMessages TimedMessages { get; set; }
     }
 
-    public class Command
+    public class ChatMessage
     {
         public List<string> TriggerWords { get; set; }
         public List<string> Responses { get; set; }

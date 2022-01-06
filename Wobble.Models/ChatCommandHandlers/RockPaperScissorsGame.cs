@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Wobble.Core;
 
-namespace Wobble.Models.ChatCommands
+namespace Wobble.Models.ChatCommandHandlers
 {
-    public class RockPaperScissorsGame : IChatCommand
+    public class RockPaperScissorsGame : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };

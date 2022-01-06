@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Wobble.Models.ChatCommands
+namespace Wobble.Models.ChatCommandHandlers
 {
-    interface IChatCommand
+    interface IChatCommandHandler
     {
         List<string> CommandTriggers { get; }
+
         string GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments = "");
     }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Wobble.Models.ChatCommands;
+using Wobble.Models.ChatCommandHandlers;
 
 namespace Wobble.Models
 {
@@ -12,26 +12,26 @@ namespace Wobble.Models
         public string ChannelName { get; }
         public string BotAccountName { get; }
         public string BotDisplayName { get; }
-        public bool HandleAlerts { get; }
+        public bool HandleHostRaidSubscriptionEvents { get; }
         public string Token { get; }
         public TimedMessages TimedMessages { get; } 
-        public List<ChatMessage> ChatCommands { get; }
+        public List<ChatCommandHandlers.ChatReply> ChatCommands { get; }
 
         public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
         {
             ChannelName = ts.ChannelName;
             BotAccountName = ts.BotAccountName;
             BotDisplayName = ts.BotDisplayName;
-            HandleAlerts = ts.HandleAlerts;
+            HandleHostRaidSubscriptionEvents = ts.HandleHostRaidSubscriptionEvents;
             TimedMessages = ts.TimedMessages;
 
             Token = configuration.First(c => c.Key == "Twitch:Token").Value;
 
-            ChatCommands = new List<ChatMessage>();
+            ChatCommands = new List<ChatCommandHandlers.ChatReply>();
 
-            foreach (Command command in ts.Commands)
+            foreach (ChatMessage command in ts.ChatMessages)
             {
-                ChatCommands.Add(new ChatMessage(command.TriggerWords, command.Responses));
+                ChatCommands.Add(new ChatCommandHandlers.ChatReply(command.TriggerWords, command.Responses));
             }
         }
     }
