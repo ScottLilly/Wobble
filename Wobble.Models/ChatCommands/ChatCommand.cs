@@ -24,7 +24,8 @@ namespace Wobble.Models.ChatCommands
                 return "";
             }
 
-            return _responses[RandomNumberGenerator.NumberBetween(0, _responses.Count - 1)];
+            return chatterDisplayName + " " +
+                   _responses[RandomNumberGenerator.NumberBetween(0, _responses.Count - 1)];
         }
     }
 }
