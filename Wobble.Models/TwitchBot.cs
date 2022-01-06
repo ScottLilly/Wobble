@@ -13,7 +13,7 @@ using TwitchLib.Communication.Events;
 using Wobble.Core;
 using Wobble.Models.ChatCommands;
 using static System.StringComparison;
-using ChatCommand = Wobble.Models.ChatCommands.ChatCommand;
+using ChatMessage = Wobble.Models.ChatCommands.ChatMessage;
 using Timer = System.Threading.Timer;
 
 namespace Wobble.Models
@@ -46,7 +46,7 @@ namespace Wobble.Models
         {
             _twitchBotSettings = twitchBotSettings;
 
-            foreach (ChatCommand chatCommand in _twitchBotSettings.ChatCommands)
+            foreach (ChatMessage chatCommand in _twitchBotSettings.ChatCommands)
             {
                 _chatCommands.Add(chatCommand);
             }
@@ -54,6 +54,8 @@ namespace Wobble.Models
             _chatCommands.Add(new ChoiceMaker());
             _chatCommands.Add(new Roller());
             _chatCommands.Add(new RockPaperScissorsGame());
+            _chatCommands.Add(new Lurk());
+            _chatCommands.Add(new Unlurk());
 
             _credentials =
                 new ConnectionCredentials(

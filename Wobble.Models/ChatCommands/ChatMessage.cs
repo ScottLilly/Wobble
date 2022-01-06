@@ -3,14 +3,14 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
 {
-    public class ChatCommand : IChatCommand
+    public class ChatMessage : IChatCommand
     {
         private readonly List<string> _responses;
 
         public List<string> CommandTriggers { get; } =
             new List<string>();
 
-        public ChatCommand(List<string> commandTriggers, List<string> responses)
+        public ChatMessage(List<string> commandTriggers, List<string> responses)
         {
             CommandTriggers = commandTriggers;
 

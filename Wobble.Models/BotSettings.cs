@@ -15,7 +15,7 @@ namespace Wobble.Models
         public bool HandleAlerts { get; }
         public string Token { get; }
         public TimedMessages TimedMessages { get; } 
-        public List<ChatCommand> ChatCommands { get; }
+        public List<ChatMessage> ChatCommands { get; }
 
         public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
         {
@@ -27,11 +27,11 @@ namespace Wobble.Models
 
             Token = configuration.First(c => c.Key == "Twitch:Token").Value;
 
-            ChatCommands = new List<ChatCommand>();
+            ChatCommands = new List<ChatMessage>();
 
             foreach (Command command in ts.Commands)
             {
-                ChatCommands.Add(new ChatCommand(command.TriggerWords, command.Responses));
+                ChatCommands.Add(new ChatMessage(command.TriggerWords, command.Responses));
             }
         }
     }
