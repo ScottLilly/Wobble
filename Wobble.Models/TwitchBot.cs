@@ -39,7 +39,9 @@ namespace Wobble.Models
 
         public TwitchBot(BotSettings twitchBotSettings)
         {
-            foreach (ChatCommand chatCommand in twitchBotSettings.ChatCommands)
+            _twitchBotSettings = twitchBotSettings;
+
+            foreach (ChatCommand chatCommand in _twitchBotSettings.ChatCommands)
             {
                 _chatCommands.Add(chatCommand);
             }
@@ -47,8 +49,6 @@ namespace Wobble.Models
             _chatCommands.Add(new ChoiceMaker());
             _chatCommands.Add(new Roller());
             _chatCommands.Add(new RockPaperScissorsGame());
-
-            _twitchBotSettings = twitchBotSettings;
 
             _credentials =
                 new ConnectionCredentials(
@@ -59,7 +59,6 @@ namespace Wobble.Models
             _client.OnChannelStateChanged += HandleChannelStateChanged;
             _client.OnChatCommandReceived += HandleChatCommandReceived;
             _client.OnDisconnected += HandleDisconnected;
-            _client.OnMessageReceived += HandleChatMessageReceived;
 
             if (_twitchBotSettings.HandleAlerts)
             {
@@ -86,31 +85,27 @@ namespace Wobble.Models
             Connect();
         }
 
-        public void SubscribeToChannelEvents()
+        private void SubscribeToChannelEvents()
         {
             _client.OnBeingHosted += HandleBeingHosted;
             _client.OnGiftedSubscription += HandleGiftedSubscription;
             _client.OnNewSubscriber += HandleNewSubscriber;
             _client.OnRaidNotification += HandleRaidNotification;
             _client.OnReSubscriber += HandleReSubscriber;
-            _client.OnUserJoined += HandleUserJoined;
-            _client.OnUserLeft += HandleUserLeft;
         }
 
-        public void UnsubscribeFromChannelEvents()
+        private void UnsubscribeFromChannelEvents()
         {
             _client.OnBeingHosted -= HandleBeingHosted;
             _client.OnGiftedSubscription -= HandleGiftedSubscription;
             _client.OnNewSubscriber -= HandleNewSubscriber;
             _client.OnRaidNotification -= HandleRaidNotification;
             _client.OnReSubscriber -= HandleReSubscriber;
-            _client.OnUserJoined -= HandleUserJoined;
-            _client.OnUserLeft -= HandleUserLeft;
         }
 
         #endregion
 
-        #region Management methods
+        #region Chat channel management methods
 
         public void EmoteModeOnlyOn()
         {
@@ -189,14 +184,10 @@ namespace Wobble.Models
 
                 if (command != null)
                 {
-                    SendChatMessage(command.GetResult(_twitchBotSettings.BotDisplayName, 
+                    SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, 
                         e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
                 }
             }
-        }
-
-        private void HandleChatMessageReceived(object sender, OnMessageReceivedArgs e)
-        {
         }
 
         private void HandleGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
@@ -223,21 +214,16 @@ namespace Wobble.Models
                 : $"{e.ReSubscriber.DisplayName}, thank you for re-subscribing!");
         }
 
-        private void HandleUserJoined(object sender, OnUserJoinedArgs e)
-        {
-        }
-
-        private void HandleUserLeft(object sender, OnUserLeftArgs e)
-        {
-        }
-
         #endregion
 
         #region Private support methods
 
         private void SendChatMessage(string message)
         {
-            _client.SendMessage(_twitchBotSettings.ChannelName, message);
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                _client.SendMessage(_twitchBotSettings.ChannelName, message);
+            }
         }
 
         private string GetAvailableCommandsList()
@@ -249,11 +235,9 @@ namespace Wobble.Models
                 triggerWords.AddRange(chatCommand.CommandTriggers.Select(ct => $"!{ct}"));
             }
 
-            var availableCommandsList = string.Join(", ",
+            return string.Join(", ",
                     triggerWords.OrderBy(ctw => ctw))
                 .ToLower(CultureInfo.InvariantCulture);
-
-            return availableCommandsList;
         }
 
         #endregion

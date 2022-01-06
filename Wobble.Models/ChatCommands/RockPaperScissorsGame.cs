@@ -8,7 +8,7 @@ namespace Wobble.Models.ChatCommands
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };
 
-        public string GetResult(string botDisplayName, string chatterDisplayName,
+        public string GetResponse(string botDisplayName, string chatterDisplayName,
             string commandTriggerWord, string arguments = "")
         {
             string botOption =

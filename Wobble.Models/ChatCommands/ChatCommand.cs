@@ -7,16 +7,17 @@ namespace Wobble.Models.ChatCommands
     {
         private readonly List<string> _responses;
 
-        public List<string> CommandTriggers { get; set; } =
+        public List<string> CommandTriggers { get; } =
             new List<string>();
 
         public ChatCommand(List<string> commandTriggers, List<string> responses)
         {
             CommandTriggers = commandTriggers;
+
             _responses = responses;
         }
 
-        public string GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+        public string GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments = "")
         {
             if (_responses.Count == 0)

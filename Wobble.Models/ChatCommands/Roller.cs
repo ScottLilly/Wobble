@@ -9,7 +9,7 @@ namespace Wobble.Models.ChatCommands
         public List<string> CommandTriggers =>
             new List<string> {"roll"};
 
-        string IChatCommand.GetResult(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
+        string IChatCommand.GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments)
         {
             // If empty, default to 1-10

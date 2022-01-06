@@ -20,7 +20,7 @@ namespace Wobble.Models
 
     public class TimedMessages
     {
-        public string IntervalInMinutes { get; set; }
+        public int IntervalInMinutes { get; set; }
         public List<string> Messages { get; set; }
     }
 }
