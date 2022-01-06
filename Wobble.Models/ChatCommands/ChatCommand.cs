@@ -26,13 +26,9 @@ namespace Wobble.Models.ChatCommands
             }
 
             // Don't include chatterDisplayName in response when the chatter is the bot
-            if (chatterDisplayName.Equals(botDisplayName))
-            {
-                return _responses[RandomNumberGenerator.NumberBetween(0, _responses.Count - 1)];
-            }
-
-            return chatterDisplayName + " " +
-                   _responses[RandomNumberGenerator.NumberBetween(0, _responses.Count - 1)];
+            return chatterDisplayName.Equals(botDisplayName)
+                ? _responses.RandomElement()
+                : $"{chatterDisplayName} {_responses.RandomElement()}";
         }
     }
 }

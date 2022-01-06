@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Wobble.Core
 {
@@ -12,6 +14,16 @@ namespace Wobble.Core
             }
 
             return text.Equals(comparisonText, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static string RandomElement(this List<string> options)
+        {
+            if (options == null || !options.Any())
+            {
+                return default;
+            }
+
+            return options[RandomNumberGenerator.NumberBetween(0, options.Count - 1)];
         }
     }
 }

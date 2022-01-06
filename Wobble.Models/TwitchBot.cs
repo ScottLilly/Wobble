@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Timers;
 using TwitchLib.Client;
 using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
+using Wobble.Core;
 using Wobble.Models.ChatCommands;
 using static System.StringComparison;
 using ChatCommand = Wobble.Models.ChatCommands.ChatCommand;
+using Timer = System.Threading.Timer;
 
 namespace Wobble.Models
 {
     public class TwitchBot : INotifyPropertyChanged
     {
+        private readonly System.Timers.Timer _timedMessagesTimer;
+
         private readonly TimeSpan _limitedChattersTimeSpan = new(0, 1, 0);
 
         private readonly TwitchClient _client = new();
@@ -63,6 +68,14 @@ namespace Wobble.Models
             if (_twitchBotSettings.HandleAlerts)
             {
                 SubscribeToChannelEvents();
+            }
+
+            if (_twitchBotSettings.TimedMessages?.IntervalInMinutes > 0)
+            {
+                _timedMessagesTimer =
+                    new System.Timers.Timer(_twitchBotSettings.TimedMessages.IntervalInMinutes * 60 * 1000);
+                _timedMessagesTimer.Elapsed += TimedMessagesTimer_Elapsed;
+                _timedMessagesTimer.Enabled = true;
             }
         }
 
@@ -167,7 +180,32 @@ namespace Wobble.Models
 
         #endregion
 
-        #region Twitch EventHandler methods
+        #region EventHandler methods
+
+        private void TimedMessagesTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var message =
+                _twitchBotSettings.TimedMessages.Messages.RandomElement();
+
+            if (message.StartsWith("!"))
+            {
+                if (message.StartsWith("!"))
+                {
+                    message = message.Substring(1);
+                }
+
+                var command = GetCommand(message);
+
+                if (command != null)
+                {
+                    SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, "", message));
+                }
+            }
+            else
+            {
+                SendChatMessage(message);
+            }
+        }
 
         private void HandleBeingHosted(object sender, OnBeingHostedArgs e)
         {
@@ -186,15 +224,19 @@ namespace Wobble.Models
                 return;
             }
 
-            var command =
-                _chatCommands.FirstOrDefault(cc =>
-                    cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
+            IChatCommand? command = GetCommand(e.Command.CommandText);
 
             if (command != null)
             {
                 SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, 
                     e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
             }
+        }
+
+        private IChatCommand GetCommand(string commandText)
+        {
+            return _chatCommands.FirstOrDefault(cc =>
+                cc.CommandTriggers.Any(ct => ct.Equals(commandText, InvariantCultureIgnoreCase)));
         }
 
         private void HandleGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)

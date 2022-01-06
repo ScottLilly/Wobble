@@ -11,8 +11,7 @@ namespace Wobble.Models.ChatCommands
         public string GetResponse(string botDisplayName, string chatterDisplayName,
             string commandTriggerWord, string arguments = "")
         {
-            string botOption =
-                CommandTriggers[RandomNumberGenerator.NumberBetween(0, CommandTriggers.Count - 1)];
+            string botOption = CommandTriggers.RandomElement();
 
             string botChoiceMessage = $"{botDisplayName} chose {botOption}.";
 

@@ -14,7 +14,7 @@ namespace Wobble.Models
         public string BotDisplayName { get; }
         public bool HandleAlerts { get; }
         public string Token { get; }
-
+        public TimedMessages TimedMessages { get; } 
         public List<ChatCommand> ChatCommands { get; }
 
         public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
@@ -23,6 +23,7 @@ namespace Wobble.Models
             BotAccountName = ts.BotAccountName;
             BotDisplayName = ts.BotDisplayName;
             HandleAlerts = ts.HandleAlerts;
+            TimedMessages = ts.TimedMessages;
 
             Token = configuration.First(c => c.Key == "Twitch:Token").Value;
 

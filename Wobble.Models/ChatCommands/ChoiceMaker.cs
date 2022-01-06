@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommands
@@ -18,16 +19,16 @@ namespace Wobble.Models.ChatCommands
             }
 
             // Get list of arguments
-            string[] optionsArray = arguments.Split(',');
+            List<string> optionsArray = arguments.Split(',').ToList();
 
             // Special message if only one option
-            if (optionsArray.Length == 1)
+            if (optionsArray.Count == 1)
             {
                 return $"You must really want {optionsArray[0]}";
             }
 
             // return random option
-            return $"The obvious choice is: {optionsArray[RandomNumberGenerator.NumberBetween(0, optionsArray.Length - 1)]}";
+            return $"The obvious choice is: {optionsArray.RandomElement()}";
         }
     }
 }
