@@ -147,9 +147,17 @@ namespace Wobble.Models
             _client.SlowModeOff(_twitchBotSettings.ChannelName);
         }
 
-        public void DisplayCommands()
+        public void DisplayCommandTriggerWords()
         {
-            SendChatMessage($"Available commands: {GetAvailableCommandsList()}");
+            List<string> triggerWords = new List<string>();
+
+            foreach (IChatCommand chatCommand in _chatCommands)
+            {
+                triggerWords.AddRange(chatCommand.CommandTriggers
+                    .Select(ct => $"!{ct.ToLower(CultureInfo.InvariantCulture)}"));
+            }
+
+            SendChatMessage($"Available commands: {string.Join(", ", triggerWords.OrderBy(ctw => ctw))}");
         }
 
         public void ClearChat()
@@ -174,19 +182,18 @@ namespace Wobble.Models
         {
             if (e.Command.CommandText.StartsWith("command", InvariantCultureIgnoreCase))
             {
-                DisplayCommands();
+                DisplayCommandTriggerWords();
+                return;
             }
-            else
-            {
-                var command =
-                    _chatCommands.FirstOrDefault(cc =>
-                        cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
 
-                if (command != null)
-                {
-                    SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, 
-                        e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
-                }
+            var command =
+                _chatCommands.FirstOrDefault(cc =>
+                    cc.CommandTriggers.Any(ct => ct.Equals(e.Command.CommandText, InvariantCultureIgnoreCase)));
+
+            if (command != null)
+            {
+                SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, 
+                    e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
             }
         }
 
@@ -220,24 +227,12 @@ namespace Wobble.Models
 
         private void SendChatMessage(string message)
         {
-            if (!string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(message))
             {
-                _client.SendMessage(_twitchBotSettings.ChannelName, message);
-            }
-        }
-
-        private string GetAvailableCommandsList()
-        {
-            List<string> triggerWords = new List<string>();
-
-            foreach (IChatCommand chatCommand in _chatCommands)
-            {
-                triggerWords.AddRange(chatCommand.CommandTriggers.Select(ct => $"!{ct}"));
+                return;
             }
 
-            return string.Join(", ",
-                    triggerWords.OrderBy(ctw => ctw))
-                .ToLower(CultureInfo.InvariantCulture);
+            _client.SendMessage(_twitchBotSettings.ChannelName, message);
         }
 
         #endregion

@@ -18,7 +18,7 @@ namespace Wobble.ViewModels
 
         public void DisplayCommands()
         {
-            _twitchBot.DisplayCommands();
+            _twitchBot.DisplayCommandTriggerWords();
         }
 
         public void ClearChat()
