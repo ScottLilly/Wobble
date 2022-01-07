@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         FontSize="11pt"
         Title="About"
-        Height="250" Width="400">
+        Height="250" Width="425">
 
     <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
@@ -40,7 +40,7 @@
                    Text="All Rights Reserved"/>
 
         <TextBlock Grid.Row="4" Grid.Column="0" 
-                   Text="Source code:"/>
+                   Text="Source:"/>
         <TextBlock Grid.Row="4" Grid.Column="1" >
             <Hyperlink NavigateUri="https://github.com/ScottLilly/Wobble"
                        RequestNavigate="Hyperlink_OnRequestNavigate">
@@ -49,11 +49,11 @@
         </TextBlock>
 
         <TextBlock Grid.Row="5" Grid.Column="0" 
-                   Text="Support page:"/>
+                   Text="Support:"/>
         <TextBlock Grid.Row="5" Grid.Column="1" >
-            <Hyperlink NavigateUri="https://scottlilly.com"
+            <Hyperlink NavigateUri="https://scottlilly.com/wobble-twitch-chat-bot/"
                        RequestNavigate="Hyperlink_OnRequestNavigate">
-                https://scottlilly.com
+                https://scottlilly.com/wobble-twitch-chat-bot/
             </Hyperlink>
         </TextBlock>
 
