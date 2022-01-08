@@ -31,7 +31,7 @@
                    Text="Wobble"/>
         <TextBlock Grid.Row="1" Grid.Column="0" 
                    Grid.ColumnSpan="2"
-                   Text="0.1.0.0"/>
+                   Text="0.9.0.0"/>
         <TextBlock Grid.Row="2" Grid.Column="0" 
                    Grid.ColumnSpan="2"
                    Text="Copyright 2021, Scott Lilly"/>

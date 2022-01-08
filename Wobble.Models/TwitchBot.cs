@@ -30,15 +30,6 @@ namespace Wobble.Models
         private readonly List<IChatCommandHandler> _chatCommandHandlers =
             new List<IChatCommandHandler>();
 
-        public enum ChatModes
-        {
-            Everyone,
-            FollowersOnly,
-            SubscribersOnly
-        }
-
-        public ChatModes ChatMode { get; set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         public TwitchBot(BotSettings twitchBotSettings)
@@ -55,7 +46,10 @@ namespace Wobble.Models
             _client.OnChatCommandReceived += HandleChatCommandReceived;
             _client.OnDisconnected += HandleDisconnected;
 
-            SubscribeToHostRaidSubscriptionEvents();
+            if (_twitchBotSettings.HandleHostRaidSubscriptionEvents)
+            {
+                SubscribeToHostRaidSubscriptionEvents();
+            }
 
             PopulateChatCommandHandlers();
 
@@ -83,11 +77,6 @@ namespace Wobble.Models
 
         private void SubscribeToHostRaidSubscriptionEvents()
         {
-            if (!_twitchBotSettings.HandleHostRaidSubscriptionEvents)
-            {
-                return;
-            }
-
             _client.OnBeingHosted += HandleBeingHosted;
             _client.OnGiftedSubscription += HandleGiftedSubscription;
             _client.OnNewSubscriber += HandleNewSubscriber;
@@ -97,11 +86,6 @@ namespace Wobble.Models
 
         private void UnsubscribeFromHostRaidSubscriptionEvents()
         {
-            if (!_twitchBotSettings.HandleHostRaidSubscriptionEvents)
-            {
-                return;
-            }
-
             _client.OnBeingHosted -= HandleBeingHosted;
             _client.OnGiftedSubscription -= HandleGiftedSubscription;
             _client.OnNewSubscriber -= HandleNewSubscriber;
