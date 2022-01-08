@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using log4net;
 using Microsoft.Extensions.DependencyInjection;
 using Wobble.Models;
 using Wobble.ViewModels;
@@ -10,6 +11,9 @@ namespace Wobble.WPF
 {
     public partial class MainWindow : Window
     {
+        private static readonly ILog s_log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+
         private readonly IServiceProvider _serviceProvider;
 
         private BotManager VM => DataContext as BotManager;
@@ -17,6 +21,8 @@ namespace Wobble.WPF
         public MainWindow(IServiceProvider serviceProvider, BotSettings botSettings)
         {
             InitializeComponent();
+
+            s_log.Info("Wobble started");
 
             _serviceProvider = serviceProvider;
 
@@ -56,6 +62,8 @@ namespace Wobble.WPF
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
+            s_log.Info("Wobble stopped");
+
             VM.Disconnect();
         }
     }

@@ -25,6 +25,9 @@ namespace Wobble.WPF
 
             Configuration = builder.Build();
 
+            log4net.Config.XmlConfigurator.Configure();
+            base.OnStartup(e);
+
             string settings = File.ReadAllText("appsettings.json");
             var ts = JsonConvert.DeserializeObject<TwitchSettings>(settings);
 
