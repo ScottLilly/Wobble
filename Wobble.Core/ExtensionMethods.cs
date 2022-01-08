@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using static System.StringComparison;
 
 namespace Wobble.Core
 {
     public static class ExtensionMethods
     {
+        public static bool IsNotNullEmptyOrWhiteSpace(this string text)
+        {
+            return !string.IsNullOrWhiteSpace(text);
+        }
+
         public static bool Matches(this string text, string comparisonText)
         {
             if (text == null || comparisonText == null)
@@ -13,7 +18,7 @@ namespace Wobble.Core
                 return false;
             }
 
-            return text.Equals(comparisonText, StringComparison.InvariantCultureIgnoreCase);
+            return text.Equals(comparisonText, InvariantCultureIgnoreCase);
         }
 
         public static string RandomElement(this List<string> options)

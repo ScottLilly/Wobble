@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Wobble.Core;
 using Wobble.Models.ChatCommandHandlers;
 
 namespace Wobble.Models
@@ -22,10 +23,11 @@ namespace Wobble.Models
             HandleHostRaidSubscriptionEvents = ts.HandleHostRaidSubscriptionEvents;
             TimedMessages = ts.TimedMessages;
 
-            // Get Twitch token from appsettings.json - for non-development execution
-            Token = string.IsNullOrWhiteSpace(ts.TwitchToken)
-                ? configuration.First(c => c.Key == "TwitchToken").Value
-                : ts.TwitchToken;
+            // Get Twitch token from appsettings.json, if present.
+            // Otherwise, this is in development and the token should be in user secrets.
+            Token = ts.TwitchToken.IsNotNullEmptyOrWhiteSpace()
+                ? ts.TwitchToken
+                : configuration.First(c => c.Key == "TwitchToken").Value;
 
             ChatCommands = new List<ChatReply>();
 
