@@ -9,7 +9,9 @@
         mc:Ignorable="d"
         FontSize="11pt"
         Title="Wobble"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight"
+        MinWidth="350"
+        MinHeight="300">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -17,12 +19,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Menu Grid.Row="0" Grid.Column="0"
-              Grid.ColumnSpan="2"
               FontSize="11pt">
             <MenuItem Header="File">
                 <MenuItem Header="Exit"
@@ -37,87 +37,8 @@
             </MenuItem>
         </Menu>
 
-        <!-- Radio Button Controls -->
-        <Grid Grid.Row="1" Grid.Column="0"
-              Margin="10,10,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="10"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="10"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <GroupBox Grid.Row="0" Grid.Column="0"
-                      BorderBrush="#FF000000" BorderThickness="1"
-                      Header="Chat Mode">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton Grid.Row="0" Grid.Column="0"
-                                 IsChecked="True"
-                                 Content="Everyone"/>
-                    <RadioButton Grid.Row="1" Grid.Column="0"
-                                 Content="Followers Only"/>
-                    <RadioButton Grid.Row="2" Grid.Column="0"
-                                 Content="Subscribers Only"/>
-                </Grid>
-            </GroupBox>
-
-            <GroupBox Grid.Row="2" Grid.Column="0"
-                      BorderBrush="#FF000000" BorderThickness="1"
-                      Header="Slow Mode">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton Grid.Row="0" Grid.Column="0"
-                                 IsChecked="True"
-                                 Content="Off"/>
-                    <RadioButton Grid.Row="1" Grid.Column="0"
-                                 Content="On"/>
-                </Grid>
-            </GroupBox>
-
-            <GroupBox Grid.Row="4" Grid.Column="0"
-                      BorderBrush="#FF000000" BorderThickness="1"
-                      Header="Emote-only Mode">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton Grid.Row="0" Grid.Column="0"
-                                 IsChecked="True"
-                                 Content="Off"/>
-                    <RadioButton Grid.Row="1" Grid.Column="0"
-                                 Content="On"/>
-                </Grid>
-            </GroupBox>
-
-        </Grid>
-
         <!-- Button Controls -->
-        <Grid Grid.Row="1" Grid.Column="1"
+        <Grid Grid.Row="1" Grid.Column="0"
               Margin="10,10,10,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -129,13 +50,13 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Row="0" Grid.Column="0"
-                    HorizontalAlignment="Right"
+                    HorizontalAlignment="Left"
                     Width="150"
                     Content="Display Commands"
                     Click="DisplayCommands_OnClick"/>
 
             <Button Grid.Row="2" Grid.Column="0"
-                    HorizontalAlignment="Right"
+                    HorizontalAlignment="Left"
                     Width="150"
                     Content="Clear Chat"
                     Click="ClearChat_OnClick"/>

@@ -15,7 +15,7 @@ namespace Wobble.Models.ChatCommandHandlers
             // Handle null or empty arguments
             if (arguments == null || string.IsNullOrWhiteSpace(arguments))
             {
-                return "You must include some options";
+                return $"{chatterDisplayName} You must include options to choose from";
             }
 
             // Get list of arguments
@@ -24,11 +24,11 @@ namespace Wobble.Models.ChatCommandHandlers
             // Special message if only one option
             if (optionsArray.Count == 1)
             {
-                return $"You must really want {optionsArray[0]}";
+                return $"{chatterDisplayName} You must really want {optionsArray[0]}";
             }
 
             // return random option
-            return $"The obvious choice is: {optionsArray.RandomElement()}";
+            return $"{chatterDisplayName} The obvious choice is: {optionsArray.RandomElement()}";
         }
     }
 }
