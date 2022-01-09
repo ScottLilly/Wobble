@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 using log4net;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +18,7 @@ namespace Wobble.WPF
 
         private TwitchBot VM => DataContext as TwitchBot;
 
-        public MainWindow(IServiceProvider serviceProvider, BotSettings botSettings,
-            CounterData counterData)
+        public MainWindow(IServiceProvider serviceProvider, BotSettings botSettings)
         {
             InitializeComponent();
 
@@ -28,7 +26,7 @@ namespace Wobble.WPF
 
             _serviceProvider = serviceProvider;
 
-            DataContext = new TwitchBot(botSettings, counterData);
+            DataContext = new TwitchBot(botSettings);
 
             Closing += OnClosing;
         }

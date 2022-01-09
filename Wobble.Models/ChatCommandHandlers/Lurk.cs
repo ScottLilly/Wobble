@@ -5,7 +5,7 @@ namespace Wobble.Models.ChatCommandHandlers
     public class Lurk : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
-            new List<string> { "Lurk" };
+            new List<string> { "lurk" };
 
         public string GetResponse(string botDisplayName, string chatterDisplayName, 
             string commandTriggerWord, string arguments = "")

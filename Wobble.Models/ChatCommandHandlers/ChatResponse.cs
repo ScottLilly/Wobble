@@ -7,8 +7,7 @@ namespace Wobble.Models.ChatCommandHandlers
     {
         private readonly List<string> _replies;
 
-        public List<string> CommandTriggers { get; } =
-            new List<string>();
+        public List<string> CommandTriggers { get; }
 
         public ChatResponse(List<string> commandTriggers, List<string> replies)
         {

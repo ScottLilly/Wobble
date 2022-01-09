@@ -13,6 +13,7 @@ using TwitchLib.Communication.Events;
 using Wobble.Core;
 using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
+using Wobble.Services;
 using static System.StringComparison;
 using ChatResponse = Wobble.Models.ChatCommandHandlers.ChatResponse;
 
@@ -34,10 +35,10 @@ namespace Wobble.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TwitchBot(BotSettings twitchBotSettings, CounterData counterData)
+        public TwitchBot(BotSettings twitchBotSettings)
         {
             _twitchBotSettings = twitchBotSettings;
-            _counterData = counterData;
+            _counterData = FileService.GetCounterData();
 
             _credentials =
                 new ConnectionCredentials(
@@ -207,26 +208,13 @@ namespace Wobble.ViewModels
 
             if (command is CounterResponse)
             {
-                // TODO: Replace "{counter}" with number and update counter file
-                string counter = "1";
-
-                string response =
-                    command.GetResponse(_twitchBotSettings.BotDisplayName,
-                        e.Command.ChatMessage.DisplayName, e.Command.CommandText, counter);
-
-                SendChatMessage(response);
+                SendChatMessage(GetCounterCommandResponse(e.Command.CommandText));
             }
             else
             {
                 SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName,
                     e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
             }
-        }
-
-        private IChatCommandHandler GetCommand(string commandText)
-        {
-            return _chatCommandHandlers.FirstOrDefault(cc =>
-                cc.CommandTriggers.Any(ct => ct.Equals(commandText, InvariantCultureIgnoreCase)));
         }
 
         private void HandleGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
@@ -272,13 +260,15 @@ namespace Wobble.ViewModels
 
         private void InitializeTimedMessages()
         {
-            if (_twitchBotSettings.TimedMessages?.IntervalInMinutes > 0)
+            if (!(_twitchBotSettings.TimedMessages?.IntervalInMinutes > 0))
             {
-                _timedMessagesTimer =
-                    new Timer(_twitchBotSettings.TimedMessages.IntervalInMinutes * 60 * 1000);
-                _timedMessagesTimer.Elapsed += TimedMessagesTimer_Elapsed;
-                _timedMessagesTimer.Enabled = true;
+                return;
             }
+
+            _timedMessagesTimer =
+                new Timer(_twitchBotSettings.TimedMessages.IntervalInMinutes * 60 * 1000);
+            _timedMessagesTimer.Elapsed += TimedMessagesTimer_Elapsed;
+            _timedMessagesTimer.Enabled = true;
         }
 
         private void PopulateChatCommandHandlers()
@@ -298,6 +288,37 @@ namespace Wobble.ViewModels
             _chatCommandHandlers.Add(new RockPaperScissorsGame());
             _chatCommandHandlers.Add(new Lurk());
             _chatCommandHandlers.Add(new Unlurk());
+        }
+
+        private IChatCommandHandler GetCommand(string commandText)
+        {
+            return _chatCommandHandlers.FirstOrDefault(cc =>
+                cc.CommandTriggers.Any(ct => ct.Equals(commandText, InvariantCultureIgnoreCase)));
+        }
+
+        private string GetCounterCommandResponse(string counterCommand)
+        {
+            IChatCommandHandler command = GetCommand(counterCommand);
+
+            if (!_counterData.CommandCounters.Any(cc => cc.Command.Matches(counterCommand)))
+            {
+                _counterData.CommandCounters.Add(new CommandCounter
+                {
+                    Command = counterCommand,
+                    Count = 0
+                });
+            }
+
+            CommandCounter commandCounter =
+                _counterData.CommandCounters
+                    .First(cc => cc.Command.Matches(counterCommand));
+
+            commandCounter.Count++;
+
+            FileService.SaveCounterData(_counterData);
+
+            return command.GetResponse(_twitchBotSettings.BotDisplayName, "",
+                counterCommand, commandCounter.Count.ToString("N0"));
         }
 
         private void SendChatMessage(string message)

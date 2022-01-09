@@ -7,7 +7,7 @@ namespace Wobble.Models.ChatCommandHandlers
     public class ChoiceMaker : IChatCommandHandler
     {
         public List<string> CommandTriggers =>
-            new List<string> { "Choose" };
+            new List<string> { "choose" };
 
         public string GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
             string arguments)
