@@ -13,7 +13,10 @@ namespace Wobble.Models
         public bool HandleHostRaidSubscriptionEvents { get; }
         public string Token { get; }
         public TimedMessages TimedMessages { get; }
-        public List<ChatReply> ChatCommands { get; }
+        public List<ChatResponse> ChatCommands { get; } =
+            new List<ChatResponse>();
+        public List<CounterResponse> CounterCommands { get; } =
+            new List<CounterResponse>();
 
         public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
         {
@@ -29,11 +32,14 @@ namespace Wobble.Models
                 ? ts.TwitchToken
                 : configuration.First(c => c.Key == "TwitchToken").Value;
 
-            ChatCommands = new List<ChatReply>();
-
-            foreach (ChatMessage command in ts.ChatMessages)
+            foreach (ChatMessage message in ts.ChatMessages)
             {
-                ChatCommands.Add(new ChatReply(command.TriggerWords, command.Responses));
+                ChatCommands.Add(new ChatResponse(message.TriggerWords, message.Responses));
+            }
+
+            foreach (CounterMessage message in ts.CounterMessages)
+            {
+                CounterCommands.Add(new CounterResponse(message.TriggerWords, message.Responses));
             }
         }
     }

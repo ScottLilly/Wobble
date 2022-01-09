@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wobble.WPF"
         xmlns:viewModels="clr-namespace:Wobble.ViewModels;assembly=Wobble.ViewModels"
-        d:DataContext="{d:DesignInstance viewModels:BotManager}"
+        d:DataContext="{d:DesignInstance viewModels:TwitchBot}"
         mc:Ignorable="d"
         FontSize="11pt"
         Title="Wobble"

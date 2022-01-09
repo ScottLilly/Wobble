@@ -12,6 +12,7 @@ namespace Wobble.WPF
     public partial class App : Application
     {
         private BotSettings _twitchBotSettings;
+        private CounterData _counterData;
 
         private IServiceProvider ServiceProvider { get; set; }
         private IConfiguration Configuration { get; set; }
@@ -25,13 +26,15 @@ namespace Wobble.WPF
 
             Configuration = builder.Build();
 
+            // Configure logging
             log4net.Config.XmlConfigurator.Configure();
             base.OnStartup(e);
 
-            string settings = File.ReadAllText("appsettings.json");
-            var ts = JsonConvert.DeserializeObject<TwitchSettings>(settings);
+            // Read settings from file
+            TwitchSettings twitchSettings = ReadTwitchSettings();
 
-            _twitchBotSettings = new BotSettings(ts, Configuration.AsEnumerable());
+            _twitchBotSettings = new BotSettings(twitchSettings, Configuration.AsEnumerable());
+            _counterData = ReadCounterData();
 
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
@@ -45,9 +48,22 @@ namespace Wobble.WPF
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(s => new MainWindow(ServiceProvider, _twitchBotSettings));
+            services.AddSingleton(s => new MainWindow(ServiceProvider, _twitchBotSettings, _counterData));
             services.AddTransient(typeof(Help));
             services.AddTransient(typeof(About));
+        }
+
+        private static TwitchSettings ReadTwitchSettings()
+        {
+            return JsonConvert
+                .DeserializeObject<TwitchSettings>(File.ReadAllText("appsettings.json"));
+        }
+
+        private static CounterData ReadCounterData()
+        {
+            return File.Exists("CounterData.json")
+                ? JsonConvert.DeserializeObject<CounterData>(File.ReadAllText("CounterData.json"))
+                : new CounterData();
         }
     }
 }

@@ -11,30 +11,33 @@ using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
 using Wobble.Core;
+using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
 using static System.StringComparison;
-using ChatReply = Wobble.Models.ChatCommandHandlers.ChatReply;
+using ChatResponse = Wobble.Models.ChatCommandHandlers.ChatResponse;
 
-namespace Wobble.Models
+namespace Wobble.ViewModels
 {
     public class TwitchBot : INotifyPropertyChanged
     {
-        private Timer _timedMessagesTimer;
-
-        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 1, 0);
-
         private readonly TwitchClient _client = new();
         private readonly BotSettings _twitchBotSettings;
         private readonly ConnectionCredentials _credentials;
+        private readonly CounterData _counterData;
 
         private readonly List<IChatCommandHandler> _chatCommandHandlers =
             new List<IChatCommandHandler>();
 
+        private Timer _timedMessagesTimer;
+
+        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 1, 0);
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TwitchBot(BotSettings twitchBotSettings)
+        public TwitchBot(BotSettings twitchBotSettings, CounterData counterData)
         {
             _twitchBotSettings = twitchBotSettings;
+            _counterData = counterData;
 
             _credentials =
                 new ConnectionCredentials(
@@ -54,19 +57,31 @@ namespace Wobble.Models
             PopulateChatCommandHandlers();
 
             InitializeTimedMessages();
+
+            Connect();
         }
 
-        #region Connection methods
-
-        public void Connect()
+        public void DisplayCommands()
         {
-            _client.Initialize(_credentials, _twitchBotSettings.ChannelName);
-            _client.Connect();
+            DisplayCommandTriggerWords();
+        }
+
+        public void ClearChat()
+        {
+            _client.ClearChat(_twitchBotSettings.ChannelName);
         }
 
         public void Disconnect()
         {
             _client.Disconnect();
+        }
+
+        #region Connection methods
+
+        private void Connect()
+        {
+            _client.Initialize(_credentials, _twitchBotSettings.ChannelName);
+            _client.Connect();
         }
 
         private void HandleDisconnected(object sender, OnDisconnectedEventArgs e)
@@ -95,7 +110,7 @@ namespace Wobble.Models
 
         #endregion
 
-        #region Chat channel management methods
+        #region Chat mode management methods
 
         public void EmoteModeOnlyOn()
         {
@@ -135,24 +150,6 @@ namespace Wobble.Models
         public void SlowModeOff()
         {
             _client.SlowModeOff(_twitchBotSettings.ChannelName);
-        }
-
-        public void DisplayCommandTriggerWords()
-        {
-            List<string> triggerWords = new List<string>();
-
-            foreach (IChatCommandHandler chatCommand in _chatCommandHandlers)
-            {
-                triggerWords.AddRange(chatCommand.CommandTriggers
-                    .Select(ct => $"!{ct.ToLower(CultureInfo.InvariantCulture)}"));
-            }
-
-            SendChatMessage($"Available commands: {string.Join(", ", triggerWords.OrderBy(ctw => ctw))}");
-        }
-
-        public void ClearChat()
-        {
-            _client.ClearChat(_twitchBotSettings.ChannelName);
         }
 
         #endregion
@@ -201,11 +198,27 @@ namespace Wobble.Models
                 return;
             }
 
-            IChatCommandHandler? command = GetCommand(e.Command.CommandText);
+            IChatCommandHandler command = GetCommand(e.Command.CommandText);
 
-            if (command != null)
+            if (command == null)
             {
-                SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, 
+                return;
+            }
+
+            if (command is CounterResponse)
+            {
+                // TODO: Replace "{counter}" with number and update counter file
+                string counter = "1";
+
+                string response =
+                    command.GetResponse(_twitchBotSettings.BotDisplayName,
+                        e.Command.ChatMessage.DisplayName, e.Command.CommandText, counter);
+
+                SendChatMessage(response);
+            }
+            else
+            {
+                SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName,
                     e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
             }
         }
@@ -244,6 +257,19 @@ namespace Wobble.Models
 
         #region Private support methods
 
+        private void DisplayCommandTriggerWords()
+        {
+            List<string> triggerWords = new List<string>();
+
+            foreach (IChatCommandHandler chatCommand in _chatCommandHandlers)
+            {
+                triggerWords.AddRange(chatCommand.CommandTriggers
+                    .Select(ct => $"!{ct.ToLower(CultureInfo.InvariantCulture)}"));
+            }
+
+            SendChatMessage($"Available commands: {string.Join(", ", triggerWords.OrderBy(ctw => ctw))}");
+        }
+
         private void InitializeTimedMessages()
         {
             if (_twitchBotSettings.TimedMessages?.IntervalInMinutes > 0)
@@ -257,9 +283,14 @@ namespace Wobble.Models
 
         private void PopulateChatCommandHandlers()
         {
-            foreach (ChatReply chatMessage in _twitchBotSettings.ChatCommands)
+            foreach (ChatResponse reply in _twitchBotSettings.ChatCommands)
             {
-                _chatCommandHandlers.Add(chatMessage);
+                _chatCommandHandlers.Add(reply);
+            }
+
+            foreach (CounterResponse reply in _twitchBotSettings.CounterCommands)
+            {
+                _chatCommandHandlers.Add(reply);
             }
 
             _chatCommandHandlers.Add(new ChoiceMaker());

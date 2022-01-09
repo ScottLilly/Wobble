@@ -10,10 +10,17 @@ namespace Wobble.Models
         public string BotDisplayName { get; set; }
         public bool HandleHostRaidSubscriptionEvents { get; set; }
         public List<ChatMessage> ChatMessages { get; set; }
+        public List<CounterMessage> CounterMessages { get; set; }
         public TimedMessages TimedMessages { get; set; }
     }
 
     public class ChatMessage
+    {
+        public List<string> TriggerWords { get; set; }
+        public List<string> Responses { get; set; }
+    }
+
+    public class CounterMessage
     {
         public List<string> TriggerWords { get; set; }
         public List<string> Responses { get; set; }

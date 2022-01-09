@@ -2,7 +2,7 @@
 
 namespace Wobble.Models.ChatCommandHandlers
 {
-    interface IChatCommandHandler
+    public interface IChatCommandHandler
     {
         List<string> CommandTriggers { get; }
 
