@@ -28,7 +28,7 @@ namespace Wobble.Core
                 return default;
             }
 
-            return options[RandomNumberGenerator.NumberBetween(0, options.Count - 1)];
+            return options[RngCreator.GetNumberBetween(0, options.Count - 1)];
         }
     }
 }

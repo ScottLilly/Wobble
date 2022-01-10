@@ -15,7 +15,7 @@ namespace Wobble.Models.ChatCommandHandlers
             // If empty, default to 1-10
             if (string.IsNullOrWhiteSpace(arguments))
             {
-                return $"You rolled a {RandomNumberGenerator.NumberBetween(1, 10)}";
+                return $"You rolled a {RngCreator.GetNumberBetween(1, 10)}";
             }
 
             string[] values = arguments.Split('-', StringSplitOptions.RemoveEmptyEntries);
@@ -27,7 +27,7 @@ namespace Wobble.Models.ChatCommandHandlers
                 {
                     return num == 0
                         ? "You rolled NOTHING!"
-                        : $"You rolled a {RandomNumberGenerator.NumberBetween(1, num)}";
+                        : $"You rolled a {RngCreator.GetNumberBetween(1, num)}";
                 }
             }
 
@@ -40,7 +40,7 @@ namespace Wobble.Models.ChatCommandHandlers
                     int lowest = Math.Min(firstNumber, secondNumber);
                     int highest = Math.Max(firstNumber, secondNumber);
 
-                    return $"You rolled a {RandomNumberGenerator.NumberBetween(lowest, highest)}";
+                    return $"You rolled a {RngCreator.GetNumberBetween(lowest, highest)}";
                 }
             }
 
