@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
+using log4net.Config;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wobble.WPF.Windows;
@@ -24,7 +25,7 @@ namespace Wobble.WPF
             Configuration = builder.Build();
 
             // Configure logging
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
             base.OnStartup(e);
 
             // Get token from user secrets (for development)

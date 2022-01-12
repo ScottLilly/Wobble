@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows;
 using log4net;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,11 +14,11 @@ namespace Wobble.WPF
     public partial class MainWindow : Window
     {
         private static readonly ILog s_log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly IServiceProvider _serviceProvider;
 
-        private TwitchBot VM => DataContext as TwitchBot;
+        private WobbleInstance VM => DataContext as WobbleInstance;
 
         public MainWindow(IServiceProvider serviceProvider, string userSecretsToken)
         {
@@ -33,7 +34,7 @@ namespace Wobble.WPF
             BotSettings botSettings =
                 new BotSettings(wobbleConfiguration, userSecretsToken);
 
-            DataContext = new TwitchBot(botSettings);
+            DataContext = new WobbleInstance(botSettings);
 
             Closing += OnClosing;
         }

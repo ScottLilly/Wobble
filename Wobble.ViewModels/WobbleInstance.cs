@@ -15,11 +15,10 @@ using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
 using Wobble.Services;
 using static System.StringComparison;
-using ChatResponse = Wobble.Models.ChatCommandHandlers.ChatResponse;
 
 namespace Wobble.ViewModels
 {
-    public class TwitchBot : INotifyPropertyChanged
+    public class WobbleInstance : INotifyPropertyChanged
     {
         private readonly TwitchClient _client = new();
         private readonly BotSettings _botSettings;
@@ -35,7 +34,7 @@ namespace Wobble.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TwitchBot(BotSettings botSettings)
+        public WobbleInstance(BotSettings botSettings)
         {
             _botSettings = botSettings;
             _counterData = PersistenceService.GetCounterData();
