@@ -38,7 +38,7 @@ namespace Wobble.ViewModels
         public TwitchBot(BotSettings twitchBotSettings)
         {
             _twitchBotSettings = twitchBotSettings;
-            _counterData = FileService.GetCounterData();
+            _counterData = PersistenceService.GetCounterData();
 
             _credentials =
                 new ConnectionCredentials(
@@ -315,7 +315,7 @@ namespace Wobble.ViewModels
 
             commandCounter.Count++;
 
-            FileService.SaveCounterData(_counterData);
+            PersistenceService.SaveCounterData(_counterData);
 
             return command.GetResponse(_twitchBotSettings.BotDisplayName, "",
                 counterCommand, commandCounter.Count.ToString("N0"));
