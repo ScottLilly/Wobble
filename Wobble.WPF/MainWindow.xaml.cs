@@ -4,6 +4,7 @@ using System.Windows;
 using log4net;
 using Microsoft.Extensions.DependencyInjection;
 using Wobble.Models;
+using Wobble.Services;
 using Wobble.ViewModels;
 using Wobble.WPF.Windows;
 
@@ -18,13 +19,19 @@ namespace Wobble.WPF
 
         private TwitchBot VM => DataContext as TwitchBot;
 
-        public MainWindow(IServiceProvider serviceProvider, BotSettings botSettings)
+        public MainWindow(IServiceProvider serviceProvider, string userSecretsToken)
         {
             InitializeComponent();
 
             s_log.Info("Wobble started");
 
             _serviceProvider = serviceProvider;
+
+            WobbleConfiguration wobbleConfiguration =
+                PersistenceService.GetWobbleConfiguration();
+
+            BotSettings botSettings =
+                new BotSettings(wobbleConfiguration, userSecretsToken);
 
             DataContext = new TwitchBot(botSettings);
 

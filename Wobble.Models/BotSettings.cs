@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Wobble.Core;
 using Wobble.Models.ChatCommandHandlers;
 
@@ -18,26 +17,26 @@ namespace Wobble.Models
         public List<CounterResponse> CounterCommands { get; } =
             new List<CounterResponse>();
 
-        public BotSettings(TwitchSettings ts, IEnumerable<KeyValuePair<string, string>> configuration)
+        public BotSettings(WobbleConfiguration wobbleConfiguration, string userSecretsToken)
         {
-            ChannelName = ts.ChannelName;
-            BotAccountName = ts.BotAccountName;
-            BotDisplayName = ts.BotDisplayName;
-            HandleHostRaidSubscriptionEvents = ts.HandleHostRaidSubscriptionEvents;
-            TimedMessages = ts.TimedMessages;
+            ChannelName = wobbleConfiguration.ChannelName;
+            BotAccountName = wobbleConfiguration.BotAccountName;
+            BotDisplayName = wobbleConfiguration.BotDisplayName;
+            HandleHostRaidSubscriptionEvents = wobbleConfiguration.HandleHostRaidSubscriptionEvents;
+            TimedMessages = wobbleConfiguration.TimedMessages;
 
             // Get Twitch token from appsettings.json, if present.
             // Otherwise, this is in development and the token should be in user secrets.
-            Token = ts.TwitchToken.IsNotNullEmptyOrWhiteSpace()
-                ? ts.TwitchToken
-                : configuration.First(c => c.Key == "TwitchToken").Value;
+            Token = wobbleConfiguration.TwitchToken.IsNotNullEmptyOrWhiteSpace()
+                ? wobbleConfiguration.TwitchToken
+                : userSecretsToken;
 
-            foreach (ChatMessage message in ts.ChatMessages)
+            foreach (ChatMessage message in wobbleConfiguration.ChatMessages)
             {
                 ChatCommands.Add(new ChatResponse(message.TriggerWords, message.Responses));
             }
 
-            foreach (CounterMessage message in ts.CounterMessages)
+            foreach (CounterMessage message in wobbleConfiguration.CounterMessages)
             {
                 CounterCommands.Add(new CounterResponse(message.TriggerWords, message.Responses));
             }

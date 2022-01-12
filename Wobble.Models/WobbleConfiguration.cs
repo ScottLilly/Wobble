@@ -2,7 +2,7 @@
 
 namespace Wobble.Models
 {
-    public class TwitchSettings
+    public class WobbleConfiguration
     {
         public string ChannelName { get; set; }
         public string BotAccountName { get; set; }

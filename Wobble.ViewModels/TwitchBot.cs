@@ -22,35 +22,35 @@ namespace Wobble.ViewModels
     public class TwitchBot : INotifyPropertyChanged
     {
         private readonly TwitchClient _client = new();
-        private readonly BotSettings _twitchBotSettings;
-        private readonly ConnectionCredentials _credentials;
+        private readonly BotSettings _botSettings;
         private readonly CounterData _counterData;
+        private readonly ConnectionCredentials _credentials;
 
         private readonly List<IChatCommandHandler> _chatCommandHandlers =
             new List<IChatCommandHandler>();
 
         private Timer _timedMessagesTimer;
 
-        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 1, 0);
+        private readonly TimeSpan _limitedChattersTimeSpan = new(0, 10, 0);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TwitchBot(BotSettings twitchBotSettings)
+        public TwitchBot(BotSettings botSettings)
         {
-            _twitchBotSettings = twitchBotSettings;
+            _botSettings = botSettings;
             _counterData = PersistenceService.GetCounterData();
 
             _credentials =
                 new ConnectionCredentials(
-                    string.IsNullOrWhiteSpace(_twitchBotSettings.BotAccountName)
-                        ? twitchBotSettings.ChannelName
-                        : _twitchBotSettings.BotAccountName, _twitchBotSettings.Token, disableUsernameCheck: true);
+                    string.IsNullOrWhiteSpace(_botSettings.BotAccountName)
+                        ? botSettings.ChannelName
+                        : _botSettings.BotAccountName, _botSettings.Token, disableUsernameCheck: true);
 
             _client.OnChannelStateChanged += HandleChannelStateChanged;
             _client.OnChatCommandReceived += HandleChatCommandReceived;
             _client.OnDisconnected += HandleDisconnected;
 
-            if (_twitchBotSettings.HandleHostRaidSubscriptionEvents)
+            if (_botSettings.HandleHostRaidSubscriptionEvents)
             {
                 SubscribeToHostRaidSubscriptionEvents();
             }
@@ -69,7 +69,7 @@ namespace Wobble.ViewModels
 
         public void ClearChat()
         {
-            _client.ClearChat(_twitchBotSettings.ChannelName);
+            _client.ClearChat(_botSettings.ChannelName);
         }
 
         public void Disconnect()
@@ -81,7 +81,7 @@ namespace Wobble.ViewModels
 
         private void Connect()
         {
-            _client.Initialize(_credentials, _twitchBotSettings.ChannelName);
+            _client.Initialize(_credentials, _botSettings.ChannelName);
             _client.Connect();
         }
 
@@ -115,42 +115,42 @@ namespace Wobble.ViewModels
 
         public void EmoteModeOnlyOn()
         {
-            _client.EmoteOnlyOn(_twitchBotSettings.ChannelName);
+            _client.EmoteOnlyOn(_botSettings.ChannelName);
         }
 
         public void EmoteModeOnlyOff()
         {
-            _client.EmoteOnlyOff(_twitchBotSettings.ChannelName);
+            _client.EmoteOnlyOff(_botSettings.ChannelName);
         }
 
         public void FollowersOnlyOn()
         {
-            _client.FollowersOnlyOn(_twitchBotSettings.ChannelName, _limitedChattersTimeSpan);
+            _client.FollowersOnlyOn(_botSettings.ChannelName, _limitedChattersTimeSpan);
         }
 
         public void FollowersOnlyOff()
         {
-            _client.FollowersOnlyOff(_twitchBotSettings.ChannelName);
+            _client.FollowersOnlyOff(_botSettings.ChannelName);
         }
 
         public void SubscribersOnlyOn()
         {
-            _client.SubscribersOnlyOn(_twitchBotSettings.ChannelName);
+            _client.SubscribersOnlyOn(_botSettings.ChannelName);
         }
 
         public void SubscribersOnlyOff()
         {
-            _client.SubscribersOnlyOff(_twitchBotSettings.ChannelName);
+            _client.SubscribersOnlyOff(_botSettings.ChannelName);
         }
 
         public void SlowModeOn()
         {
-            _client.SlowModeOn(_twitchBotSettings.ChannelName, _limitedChattersTimeSpan);
+            _client.SlowModeOn(_botSettings.ChannelName, _limitedChattersTimeSpan);
         }
 
         public void SlowModeOff()
         {
-            _client.SlowModeOff(_twitchBotSettings.ChannelName);
+            _client.SlowModeOff(_botSettings.ChannelName);
         }
 
         #endregion
@@ -160,7 +160,7 @@ namespace Wobble.ViewModels
         private void TimedMessagesTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var message =
-                _twitchBotSettings.TimedMessages.Messages.RandomElement();
+                _botSettings.TimedMessages.Messages.RandomElement();
 
             if (message.StartsWith("!"))
             {
@@ -173,7 +173,7 @@ namespace Wobble.ViewModels
 
                 if (command != null)
                 {
-                    SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName, "", message));
+                    SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, "", message));
                 }
             }
             else
@@ -212,7 +212,7 @@ namespace Wobble.ViewModels
             }
             else
             {
-                SendChatMessage(command.GetResponse(_twitchBotSettings.BotDisplayName,
+                SendChatMessage(command.GetResponse(_botSettings.BotDisplayName,
                     e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
             }
         }
@@ -260,25 +260,25 @@ namespace Wobble.ViewModels
 
         private void InitializeTimedMessages()
         {
-            if (!(_twitchBotSettings.TimedMessages?.IntervalInMinutes > 0))
+            if (!(_botSettings.TimedMessages?.IntervalInMinutes > 0))
             {
                 return;
             }
 
             _timedMessagesTimer =
-                new Timer(_twitchBotSettings.TimedMessages.IntervalInMinutes * 60 * 1000);
+                new Timer(_botSettings.TimedMessages.IntervalInMinutes * 60 * 1000);
             _timedMessagesTimer.Elapsed += TimedMessagesTimer_Elapsed;
             _timedMessagesTimer.Enabled = true;
         }
 
         private void PopulateChatCommandHandlers()
         {
-            foreach (ChatResponse reply in _twitchBotSettings.ChatCommands)
+            foreach (ChatResponse reply in _botSettings.ChatCommands)
             {
                 _chatCommandHandlers.Add(reply);
             }
 
-            foreach (CounterResponse reply in _twitchBotSettings.CounterCommands)
+            foreach (CounterResponse reply in _botSettings.CounterCommands)
             {
                 _chatCommandHandlers.Add(reply);
             }
@@ -317,7 +317,7 @@ namespace Wobble.ViewModels
 
             PersistenceService.SaveCounterData(_counterData);
 
-            return command.GetResponse(_twitchBotSettings.BotDisplayName, "",
+            return command.GetResponse(_botSettings.BotDisplayName, "",
                 counterCommand, commandCounter.Count.ToString("N0"));
         }
 
@@ -328,7 +328,7 @@ namespace Wobble.ViewModels
                 return;
             }
 
-            _client.SendMessage(_twitchBotSettings.ChannelName, message);
+            _client.SendMessage(_botSettings.ChannelName, message);
         }
 
         #endregion
