@@ -163,10 +163,7 @@ namespace Wobble.ViewModels
 
             if (message.StartsWith("!"))
             {
-                if (message.StartsWith("!"))
-                {
-                    message = message.Substring(1);
-                }
+                message = message.Substring(1);
 
                 var command = GetCommand(message);
 
