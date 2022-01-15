@@ -269,16 +269,11 @@ namespace Wobble.ViewModels
 
         private void PopulateChatCommandHandlers()
         {
-            foreach (ChatResponse reply in _botSettings.ChatCommands)
-            {
-                _chatCommandHandlers.Add(reply);
-            }
+            // Add commands populated from appsettings
+            _chatCommandHandlers.AddRange(_botSettings.ChatCommands);
+            _chatCommandHandlers.AddRange(_botSettings.CounterCommands);
 
-            foreach (CounterResponse reply in _botSettings.CounterCommands)
-            {
-                _chatCommandHandlers.Add(reply);
-            }
-
+            // Add other commands
             _chatCommandHandlers.Add(new ChoiceMaker());
             _chatCommandHandlers.Add(new Roller());
             _chatCommandHandlers.Add(new RockPaperScissorsGame());
