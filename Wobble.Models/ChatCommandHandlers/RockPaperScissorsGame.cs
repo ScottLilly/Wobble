@@ -3,7 +3,7 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
 {
-    public class RockPaperScissorsGame : IChatCommandHandler
+    public class RockPaperScissorsGame : IWobbleCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };

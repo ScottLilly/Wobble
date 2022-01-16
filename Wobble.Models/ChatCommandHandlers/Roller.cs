@@ -4,7 +4,7 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
 {
-    public class Roller : IChatCommandHandler
+    public class Roller : IWobbleCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> {"roll"};

@@ -12,6 +12,9 @@ namespace Wobble.Models
         public bool HandleHostRaidSubscriptionEvents { get; }
         public string Token { get; }
         public TimedMessages TimedMessages { get; }
+
+        public List<WobbleCommand> WobbleCommands { get; } =
+            new List<WobbleCommand>();
         public List<ChatResponse> ChatCommands { get; } =
             new List<ChatResponse>();
         public List<CounterResponse> CounterCommands { get; } =
@@ -30,6 +33,8 @@ namespace Wobble.Models
             Token = wobbleConfiguration.TwitchToken.IsNotNullEmptyOrWhiteSpace()
                 ? wobbleConfiguration.TwitchToken
                 : userSecretsToken;
+
+            WobbleCommands.AddRange(wobbleConfiguration.WobbleCommands);
 
             foreach (ChatMessage message in wobbleConfiguration.ChatMessages)
             {

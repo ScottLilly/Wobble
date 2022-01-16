@@ -4,7 +4,7 @@ using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
 {
-    public class ChoiceMaker : IChatCommandHandler
+    public class ChoiceMaker : IWobbleCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "choose" };

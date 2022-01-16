@@ -4,9 +4,7 @@
 
 Create user secrets file with this format:
 {
-  "Twitch": {
-    "Token": "INSERT_YOUR_TOKEN_HERE"
-  }
+  "TwitchToken": "INSERT_YOUR_TOKEN_HERE"
 }
 
 

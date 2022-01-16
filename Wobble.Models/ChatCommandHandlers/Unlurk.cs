@@ -2,7 +2,7 @@
 
 namespace Wobble.Models.ChatCommandHandlers
 {
-    public class Unlurk : IChatCommandHandler
+    public class Unlurk : IWobbleCommandHandler
     {
         public List<string> CommandTriggers =>
             new List<string> { "unlurk" };

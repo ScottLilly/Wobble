@@ -9,6 +9,7 @@ namespace Wobble.Models
         public string TwitchToken { get; set; }
         public string BotDisplayName { get; set; }
         public bool HandleHostRaidSubscriptionEvents { get; set; }
+        public List<WobbleCommand> WobbleCommands { get; set; }
         public List<ChatMessage> ChatMessages { get; set; }
         public List<CounterMessage> CounterMessages { get; set; }
         public TimedMessages TimedMessages { get; set; }
@@ -31,4 +32,11 @@ namespace Wobble.Models
         public int IntervalInMinutes { get; set; }
         public List<string> Messages { get; set; }
     }
+
+    public class WobbleCommand
+    {
+        public string Name { get; set; }
+        public bool IsEnabled { get; set; }
+    }
+
 }

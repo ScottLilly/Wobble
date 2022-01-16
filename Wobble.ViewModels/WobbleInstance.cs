@@ -273,12 +273,33 @@ namespace Wobble.ViewModels
             _chatCommandHandlers.AddRange(_botSettings.ChatCommands);
             _chatCommandHandlers.AddRange(_botSettings.CounterCommands);
 
+            // TODO: Use Reflection to load IWobbleChatCommands
             // Add other commands
-            _chatCommandHandlers.Add(new ChoiceMaker());
-            _chatCommandHandlers.Add(new Roller());
-            _chatCommandHandlers.Add(new RockPaperScissorsGame());
-            _chatCommandHandlers.Add(new Lurk());
-            _chatCommandHandlers.Add(new Unlurk());
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("ChoiceMaker"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new ChoiceMaker());
+            }
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("Roller"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new Roller());
+            }
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("RockPaperScissorsGame"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new RockPaperScissorsGame());
+            }
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("Lurk"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new Lurk());
+            }
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("Unlurk"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new Unlurk());
+            }
         }
 
         private IChatCommandHandler GetCommand(string commandText)
