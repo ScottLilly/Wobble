@@ -303,6 +303,11 @@ namespace Wobble.ViewModels
             {
                 _chatCommandHandlers.Add(new Unlurk());
             }
+            if (_botSettings.WobbleCommands.FirstOrDefault(
+                    c => c.Name.Matches("MyPoints"))?.IsEnabled ?? false)
+            {
+                _chatCommandHandlers.Add(new MyPoints(_wobblePointsData));
+            }
         }
 
         private IChatCommandHandler GetCommand(string commandText)
@@ -346,21 +351,18 @@ namespace Wobble.ViewModels
             _client.SendMessage(_botSettings.ChannelName, message);
         }
 
-        private void GiveWobblePoints(OnChatCommandReceivedArgs e)
+        private void GiveWobblePoints(string userId)
         {
-            // Use e.Command.ChatMessage.UserId to get chat user's ID.
-            string chatMessageUserId = e.Command.ChatMessage.UserId;
-
-            if (_wobblePointsData.UserPoints.None(up => up.Name.Matches(chatMessageUserId)))
+            if (_wobblePointsData.UserPoints.None(up => up.Name.Matches(userId)))
             {
                 _wobblePointsData.UserPoints.Add(new WobblePointsData.UserPoint
                 {
-                    Name = chatMessageUserId,
+                    Name = userId,
                     Points = 0
                 });
             }
 
-            _wobblePointsData.UserPoints.First(up => up.Name.Matches(chatMessageUserId)).Points += 10;
+            _wobblePointsData.UserPoints.First(up => up.Name.Matches(userId)).Points += 10;
         }
 
         #endregion
