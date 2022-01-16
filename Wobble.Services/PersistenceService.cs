@@ -8,6 +8,7 @@ namespace Wobble.Services
     {
         private const string WOBBLE_CONFIGURATION_FILE_NAME = "appsettings.json";
         private const string COUNTER_DATA_FILE_NAME = "CounterData.json";
+        private const string WOBBLE_POINTS_DATA_FILE_NAME = "WobblePoints.json";
 
         public static WobbleConfiguration GetWobbleConfiguration()
         {
@@ -33,6 +34,19 @@ namespace Wobble.Services
         {
             File.WriteAllText(COUNTER_DATA_FILE_NAME,
                 JsonConvert.SerializeObject(counterData, Formatting.Indented));
+        }
+
+        public static WobblePointsData GetWobblePointsData()
+        {
+            return File.Exists(WOBBLE_POINTS_DATA_FILE_NAME)
+                ? JsonConvert.DeserializeObject<WobblePointsData>(File.ReadAllText(WOBBLE_POINTS_DATA_FILE_NAME))
+                : new WobblePointsData();
+        }
+
+        public static void SaveWobblePointsData(WobblePointsData wobblePointsData)
+        {
+            File.WriteAllText(WOBBLE_POINTS_DATA_FILE_NAME,
+                JsonConvert.SerializeObject(wobblePointsData, Formatting.Indented));
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Wobble.ViewModels
         private readonly TwitchClient _client = new();
         private readonly BotSettings _botSettings;
         private readonly CounterData _counterData;
+        private readonly WobblePointsData _wobblePointsData;
         private readonly ConnectionCredentials _credentials;
 
         private readonly List<IChatCommandHandler> _chatCommandHandlers =
@@ -38,6 +39,7 @@ namespace Wobble.ViewModels
         {
             _botSettings = botSettings;
             _counterData = PersistenceService.GetCounterData();
+            _wobblePointsData = PersistenceService.GetWobblePointsData();
 
             _credentials =
                 new ConnectionCredentials(
@@ -73,6 +75,8 @@ namespace Wobble.ViewModels
 
         public void Disconnect()
         {
+            // TODO: Find a better place to update WobblePointsData file
+            PersistenceService.SaveWobblePointsData(_wobblePointsData);
             _client.Disconnect();
         }
 
@@ -341,6 +345,23 @@ namespace Wobble.ViewModels
             }
 
             _client.SendMessage(_botSettings.ChannelName, message);
+        }
+
+        private void GiveWobblePoints(OnChatCommandReceivedArgs e)
+        {
+            // Use e.Command.ChatMessage.UserId to get chat user's ID.
+            string chatMessageUserId = e.Command.ChatMessage.UserId;
+
+            if (_wobblePointsData.UserPoints.None(up => up.Name.Matches(chatMessageUserId)))
+            {
+                _wobblePointsData.UserPoints.Add(new WobblePointsData.UserPoint
+                {
+                    Name = chatMessageUserId,
+                    Points = 0
+                });
+            }
+
+            _wobblePointsData.UserPoints.First(up => up.Name.Matches(chatMessageUserId)).Points += 10;
         }
 
         #endregion
