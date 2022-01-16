@@ -173,7 +173,7 @@ namespace Wobble.ViewModels
 
                 if (command != null)
                 {
-                    SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, "", message));
+                    SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, null));
                 }
             }
             else
@@ -212,8 +212,7 @@ namespace Wobble.ViewModels
             }
             else
             {
-                SendChatMessage(command.GetResponse(_botSettings.BotDisplayName,
-                    e.Command.ChatMessage.DisplayName, e.Command.CommandText, e.Command.ArgumentsAsString));
+                SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, e.Command));
             }
         }
 
@@ -333,8 +332,8 @@ namespace Wobble.ViewModels
 
             PersistenceService.SaveCounterData(_counterData);
 
-            return command.GetResponse(_botSettings.BotDisplayName, "",
-                counterCommand, commandCounter.Count.ToString("N0"));
+            return command.GetResponse(_botSettings.BotDisplayName, null)
+                .Replace("{counter}", commandCounter.Count.ToString("N0"));
         }
 
         private void SendChatMessage(string message)

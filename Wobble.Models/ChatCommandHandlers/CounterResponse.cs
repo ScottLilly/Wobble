@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TwitchLib.Client.Models;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
@@ -16,12 +17,11 @@ namespace Wobble.Models.ChatCommandHandlers
             _replies = replies;
         }
 
-        public string GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
-            string arguments = "")
+        public string GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
             return _replies.Count == 0
                 ? ""
-                : _replies.RandomElement().Replace("{counter}", arguments);
+                : _replies.RandomElement();
         }
     }
 }

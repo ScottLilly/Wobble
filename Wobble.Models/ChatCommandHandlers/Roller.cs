@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwitchLib.Client.Models;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
@@ -9,16 +10,16 @@ namespace Wobble.Models.ChatCommandHandlers
         public List<string> CommandTriggers =>
             new List<string> {"roll"};
 
-        string IChatCommandHandler.GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
-            string arguments)
+        string IChatCommandHandler.GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
             // If empty, default to 1-10
-            if (string.IsNullOrWhiteSpace(arguments))
+            if (string.IsNullOrWhiteSpace(chatCommand.ArgumentsAsString))
             {
                 return $"You rolled a {RngCreator.GetNumberBetween(1, 10)}";
             }
 
-            string[] values = arguments.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            string[] values =
+                chatCommand.ArgumentsAsString.Split('-', StringSplitOptions.RemoveEmptyEntries);
 
             // If single number, return 1 to argument number
             if (values.Length == 1)

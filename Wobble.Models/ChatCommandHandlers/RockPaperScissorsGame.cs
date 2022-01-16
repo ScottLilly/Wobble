@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TwitchLib.Client.Models;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
@@ -8,26 +9,28 @@ namespace Wobble.Models.ChatCommandHandlers
         public List<string> CommandTriggers =>
             new List<string> { "rock", "paper", "scissors" };
 
-        public string GetResponse(string botDisplayName, string chatterDisplayName,
-            string commandTriggerWord, string arguments = "")
+        public string GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
             string botOption = CommandTriggers.RandomElement();
 
             string botChoiceMessage = $"{botDisplayName} chose {botOption}.";
 
-            if (commandTriggerWord.Matches(botOption))
+            string triggerWord = chatCommand.CommandText;
+            string chatterName = chatCommand.ChatMessage.DisplayName;
+
+            if (triggerWord.Matches(botOption))
             {
-                return $"{botChoiceMessage} {chatterDisplayName} tied. :/";
+                return $"{botChoiceMessage} {chatterName} tied. :/";
             }
 
-            if ((commandTriggerWord.Matches("rock") && botOption.Matches("scissors")) ||
-                (commandTriggerWord.Matches("paper") && botOption.Matches("rock")) ||
-                (commandTriggerWord.Matches("scissors") && botOption.Matches("paper")))
+            if ((triggerWord.Matches("rock") && botOption.Matches("scissors")) ||
+                (triggerWord.Matches("paper") && botOption.Matches("rock")) ||
+                (triggerWord.Matches("scissors") && botOption.Matches("paper")))
             {
-                return $"{botChoiceMessage} {chatterDisplayName} won! :D";
+                return $"{botChoiceMessage} {chatterName} won! :D";
             }
 
-            return $"{botChoiceMessage} {chatterDisplayName} lost. :(";
+            return $"{botChoiceMessage} {chatterName} lost. :(";
         }
     }
 }

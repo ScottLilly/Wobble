@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using TwitchLib.Client.Models;
 using Wobble.Core;
 
 namespace Wobble.Models.ChatCommandHandlers
@@ -16,8 +18,7 @@ namespace Wobble.Models.ChatCommandHandlers
             _replies = replies;
         }
 
-        public string GetResponse(string botDisplayName, string chatterDisplayName, string commandTriggerWord,
-            string arguments = "")
+        public string GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
             if (_replies.Count == 0)
             {
@@ -25,9 +26,9 @@ namespace Wobble.Models.ChatCommandHandlers
             }
 
             // Don't include chatterDisplayName in response when the chatter is the bot
-            return chatterDisplayName.Equals(botDisplayName)
+            return chatCommand?.ChatMessage?.DisplayName == null
                 ? _replies.RandomElement()
-                : $"{chatterDisplayName} {_replies.RandomElement()}";
+                : $"{chatCommand.ChatMessage.DisplayName} {_replies.RandomElement()}";
         }
     }
 }

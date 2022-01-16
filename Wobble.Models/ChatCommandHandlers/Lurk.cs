@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TwitchLib.Client.Models;
 
 namespace Wobble.Models.ChatCommandHandlers
 {
@@ -7,10 +8,9 @@ namespace Wobble.Models.ChatCommandHandlers
         public List<string> CommandTriggers =>
             new List<string> { "lurk" };
 
-        public string GetResponse(string botDisplayName, string chatterDisplayName, 
-            string commandTriggerWord, string arguments = "")
+        public string GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
-            return $"{chatterDisplayName} begins lurking in the shadows.";
+            return $"{chatCommand.ChatMessage.DisplayName} begins lurking in the shadows.";
         }
     }
 }
