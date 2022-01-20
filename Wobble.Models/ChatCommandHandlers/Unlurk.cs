@@ -10,7 +10,7 @@ namespace Wobble.Models.ChatCommandHandlers
 
         public string GetResponse(string botDisplayName, ChatCommand chatCommand)
         {
-            return $"{chatCommand.ChatMessage.DisplayName} sneaks back into chat from the shadows.";
+            return $"{chatCommand.ChatMessage.DisplayName} notices all the bugs are fixed and sneaks back from the break room.";
         }
     }
 }
