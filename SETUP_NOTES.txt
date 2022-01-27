@@ -1,17 +1,78 @@
-﻿Setup Instructions
+﻿Wobble setup instructions
 ====================================================================
+Currently, there is no installer for Wobble - although that is planned.
+
+To run Wobble, you must:
+1. Configure the values in Wobble.WPF\appsettings.json (see below)
+2. Build the solution with anything that builds a .NET 5/C# solution
+	For example, Visual Studio or Visual Code
+3. Run the Wobble.WPF.exe that was created in step 2
+
+NOTE:	Wobble is still in development, and it "works on my computer"
+		If you encounter a problem, please submit an issue here: https://github.com/ScottLilly/Wobble/issues
 
 
+Create a Twitch bot user account
+====================================================================
+Wobble was built using a separate Twitch user account for the bot.
+Wobble should work if you use your main account; however, it was built around using a separate bot account.
+
+After creating your Twitch account, get a token to use for the bot.
+To get your Twitch token, visit https://dev.twitch.tv/docs/authentication and https://twitchapps.com/tmi/
+
+NOTE: Keep this token secret.
+
+
+Configuring appsettings.json
+====================================================================
+Open Wobble.WPF\appsettings.json in a text editor
+	Ideally one that understands the JSON format, like Notepad++ https://notepad-plus-plus.org/
+
+Lines 2-6 contain the information about your bot. Replace it with 
+    - ChannelName: Twitch channel the bot will connect to, for example "CodingWithScott"
+    - BotAccountName: Twitch account the bot is connecting with, for example "codingwithscottbot"
+	- TwitchToken: The token you received during the "Create a Twitch bot user account" step above
+		NOTE: See below, if you are a developer and want to place this in your user secrets file
+    - BotDisplayName: Name to display in chat for bot messages, for example "CodingWithScottBot"
+	- HandleHostRaidSubscriptionEvents: true or false, depending on if you want Wobble to do something for hosts/raids/subscriptions
+
+
+Storing your Twitch token in user secrets
+-----------------------------------------------------
+For C# developers, you can store your token in user secrets, in the format below.
+Wobble will attempt to use the TwitchToken value from appsettings.json first.
+If there is no value in appsettings.json, it will look for the value in user secrets.
+If there is no TwitchToken in user secrets, the program will currently crash (better error handling is planned)
 Create user secrets file with this format:
 {
   "TwitchToken": "INSERT_YOUR_TOKEN_HERE"
 }
 
 
-NOTES
-========================================================================================
-- For your Twitch token, check https://dev.twitch.tv/docs/authentication and https://twitchapps.com/tmi/
-- In the appsettings.json
-    - ChannelName: Twitch channel the bot will connect to, for example "CodingWithScott"
-    - BotAccountName: Twitch account the bot is connecting with, for example "codingwithscottbot"
-    - BotDisplayName: Name to display in chat for bot messages, for example "CodingWithScottBot"
+Setting up features in appsettings.json
+-----------------------------------------------------
+The "WobbleCommands" section shows functions Wobble has built in.
+You can turn them on or off by setting their "IsEnabled" to "true" (enabled) or "false" (disabled).
+
+The "ChatMessages" section is for simple responses to chat commands (prefixed by "!")
+Each ChatMessage has a TriggerWords array and a "Responses" array.
+
+"TriggerWords" are the words that will cause a response to be written in Twitch chat.
+NOTE: TriggerWords values are not case-sensitive.
+"Responses" can have one or more values.
+If there is only one value, that will always be the response displayed in chat.
+If there are multiple values, Wobble will randomly select one to display in chat.
+
+"CounterMessages" are commands that store an incrementing counter that is displayed in the reponse.
+The first time a chat user types in a TriggerWords value, a count value is stored in the file CounterData.json.
+Before displaying the Response, Wobble will replace the substring "{counter}" with the value from the file for that TriggerWord.
+Wobble will then increment the value in CounterData.json, for the next time the TriggerWord is used.
+
+"TimedMessages" are messages or commands that will be displayed on a regular interval.
+"IntervalInMinutes" is the number of minutes between displaying a TimedMessage.
+"Messages" is an array of responses that will be randomly-selected when the timer fires.
+
+
+Support
+====================================================================
+If you encounter a problem, please submit an issue here: https://github.com/ScottLilly/Wobble/issues
