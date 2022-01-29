@@ -299,11 +299,6 @@ namespace Wobble.ViewModels
                 _chatCommandHandlers.Add(new Lurk());
             }
             if (_botSettings.WobbleCommands.FirstOrDefault(
-                    c => c.Name.Matches("Unlurk"))?.IsEnabled ?? false)
-            {
-                _chatCommandHandlers.Add(new Unlurk());
-            }
-            if (_botSettings.WobbleCommands.FirstOrDefault(
                     c => c.Name.Matches("MyPoints"))?.IsEnabled ?? false)
             {
                 _chatCommandHandlers.Add(new MyPoints(_wobblePointsData));
