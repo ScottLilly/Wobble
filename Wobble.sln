@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wobble.WPF", "Wobble.WPF\Wobble.WPF.csproj", "{46C5EBA6-9A8A-42AF-A320-976345B74845}"
 EndProject
@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wobble.Models", "Wobble.Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wobble.Core", "Wobble.Core\Wobble.Core.csproj", "{3F29444B-1C36-423F-B70B-7EE4EAF672C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wobble.Services", "Wobble.Services\Wobble.Services.csproj", "{A982B879-A603-4A3A-B846-39A8B5F225A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wobble.Services", "Wobble.Services\Wobble.Services.csproj", "{A982B879-A603-4A3A-B846-39A8B5F225A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wobble.Console", "Wobble.Console\Wobble.Console.csproj", "{B7E734C1-869C-4237-9EC8-180F268B7780}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,7 +22,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{46C5EBA6-9A8A-42AF-A320-976345B74845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46C5EBA6-9A8A-42AF-A320-976345B74845}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46C5EBA6-9A8A-42AF-A320-976345B74845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46C5EBA6-9A8A-42AF-A320-976345B74845}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E96450F7-70D4-4D7A-92B7-B07DC551BFFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -39,6 +40,10 @@ Global
 		{A982B879-A603-4A3A-B846-39A8B5F225A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A982B879-A603-4A3A-B846-39A8B5F225A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A982B879-A603-4A3A-B846-39A8B5F225A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7E734C1-869C-4237-9EC8-180F268B7780}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7E734C1-869C-4237-9EC8-180F268B7780}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7E734C1-869C-4237-9EC8-180F268B7780}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7E734C1-869C-4237-9EC8-180F268B7780}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
