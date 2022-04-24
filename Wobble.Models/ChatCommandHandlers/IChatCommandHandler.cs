@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using TwitchLib.Client.Models;
 
-namespace Wobble.Models.ChatCommandHandlers
-{
-    public interface IChatCommandHandler
-    {
-        List<string> CommandTriggers { get; }
+namespace Wobble.Models.ChatCommandHandlers;
 
-        string GetResponse(string botDisplayName, ChatCommand chatCommand);
-    }
+public interface IChatCommandHandler
+{
+    List<string> CommandTriggers { get; }
+
+    string GetResponse(string botDisplayName, ChatCommand chatCommand);
 }
