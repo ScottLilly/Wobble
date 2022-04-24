@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Timers;
 using TwitchLib.Client;
@@ -20,6 +21,8 @@ namespace Wobble.ViewModels
 {
     public class WobbleInstance : INotifyPropertyChanged
     {
+        private const string CHAT_LOG_DIRECTORY = "./ChatLogs";
+
         private readonly TwitchClient _client = new();
         private readonly BotSettings _botSettings;
         private readonly CounterData _counterData;
@@ -49,6 +52,7 @@ namespace Wobble.ViewModels
 
             _client.OnChannelStateChanged += HandleChannelStateChanged;
             _client.OnChatCommandReceived += HandleChatCommandReceived;
+            _client.OnMessageReceived += HandleChatMessageReceived;
             _client.OnDisconnected += HandleDisconnected;
 
             if (_botSettings.HandleHostRaidSubscriptionEvents)
@@ -61,6 +65,23 @@ namespace Wobble.ViewModels
             InitializeTimedMessages();
 
             Connect();
+        }
+
+        private void HandleChatMessageReceived(object sender, OnMessageReceivedArgs e)
+        {
+            WriteToChatLog(e.ChatMessage.DisplayName, e.ChatMessage.Message);
+        }
+
+        private void WriteToChatLog(string chatterName, string message)
+        {
+            if (!Directory.Exists(CHAT_LOG_DIRECTORY))
+            {
+                Directory.CreateDirectory(CHAT_LOG_DIRECTORY);
+            }
+
+            File.AppendAllText(
+                Path.Combine(CHAT_LOG_DIRECTORY, $"Wobble-{DateTime.Now:yyyy-MM-dd}.log"),
+                $"{DateTime.Now.ToShortTimeString()}: {chatterName} - {message}{Environment.NewLine}");
         }
 
         public void DisplayCommands()
@@ -344,6 +365,7 @@ namespace Wobble.ViewModels
             }
 
             _client.SendMessage(_botSettings.ChannelName, message);
+            WriteToChatLog(_botSettings.BotDisplayName, message);
         }
 
         private void GiveWobblePoints(string userId)

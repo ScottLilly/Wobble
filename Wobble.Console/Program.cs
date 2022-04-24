@@ -8,24 +8,9 @@ using Wobble.ViewModels;
 Console.WriteLine("Wobble - Twitch chat bot");
 Console.WriteLine("Type '!help' to see available commands");
 
-// Setup
-var builder = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddUserSecrets<Program>();
+WobbleInstance wobbleInstance = SetupWobbleInstance();
 
-var configuration = builder.Build();
-
-string userSecretsToken =
-    configuration.AsEnumerable().First(c => c.Key == "TwitchToken").Value;
-
-WobbleConfiguration wobbleConfiguration =
-    PersistenceService.GetWobbleConfiguration();
-
-BotSettings botSettings =
-    new BotSettings(wobbleConfiguration, userSecretsToken);
-
-var wobbleInstance = new WobbleInstance(botSettings);
-
+// Wait for user commands
 string? command = "";
 
 do
@@ -91,3 +76,23 @@ do
     }
 
 } while ( !command.Equals("exit", StringComparison.InvariantCultureIgnoreCase));
+
+WobbleInstance SetupWobbleInstance()
+{
+    var builder = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddUserSecrets<Program>();
+
+    var configuration = builder.Build();
+
+    string userSecretsToken =
+        configuration.AsEnumerable().First(c => c.Key == "TwitchToken").Value;
+
+    WobbleConfiguration wobbleConfiguration =
+        PersistenceService.GetWobbleConfiguration();
+
+    BotSettings botSettings =
+        new BotSettings(wobbleConfiguration, userSecretsToken);
+
+    return new WobbleInstance(botSettings);
+}
