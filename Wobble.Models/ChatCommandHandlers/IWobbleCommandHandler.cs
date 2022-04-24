@@ -1,6 +1,5 @@
-﻿namespace Wobble.Models.ChatCommandHandlers
+﻿namespace Wobble.Models.ChatCommandHandlers;
+
+public interface IWobbleCommandHandler : IChatCommandHandler
 {
-    public interface IWobbleCommandHandler : IChatCommandHandler
-    {
-    }
 }

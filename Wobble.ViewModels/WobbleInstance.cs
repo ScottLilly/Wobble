@@ -324,6 +324,8 @@ namespace Wobble.ViewModels
             {
                 _chatCommandHandlers.Add(new MyPoints(_wobblePointsData));
             }
+
+            _chatCommandHandlers.Add(new AddCommand(_chatCommandHandlers));
         }
 
         private IChatCommandHandler GetCommand(string commandText)
