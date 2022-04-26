@@ -22,7 +22,19 @@ public class ChoiceMaker : IWobbleCommandHandler
         }
 
         // Get list of arguments
-        List<string> optionsArray = args.Split(',').ToList();
+        List<string> optionsArray;
+        if (args.Contains(','))
+        {
+            optionsArray = args.Split(',').ToList();
+        }
+        else if(args.Contains(' '))
+        {
+            optionsArray = args.Split(' ').ToList();
+        }
+        else
+        {
+            return $"{chatterName} You must enter the choices, separated by commas or spaces";
+        }
 
         // Special message if only one option
         if (optionsArray.Count == 1)
