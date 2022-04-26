@@ -38,7 +38,8 @@ public class BotSettings
 
         foreach (ChatMessage message in wobbleConfiguration.ChatMessages)
         {
-            ChatCommands.Add(new ChatResponse(message.TriggerWords, message.Responses));
+            ChatCommands.Add(new ChatResponse(message.TriggerWords, message.Responses,
+                message.RequiresArgument, message.MissingArgumentMessage));
         }
 
         foreach (CounterMessage message in wobbleConfiguration.CounterMessages)
