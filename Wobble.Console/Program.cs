@@ -34,10 +34,13 @@ do
         Console.WriteLine("!subonlyoff         Turn sub-only mode off");
         Console.WriteLine("!slowmodeon         Turn slow mode on");
         Console.WriteLine("!slowmodeoff        Turn slow mode off");
+        //Console.WriteLine("!title <title>      Change the stream title to <title>");
     }
     else
     {
-        switch (command.ToLowerInvariant())
+        var commandWords = command.Split(" ");
+
+        switch (commandWords[0].ToLowerInvariant())
         {
             case "!commands":
                 wobbleInstance.DisplayCommands();
@@ -68,6 +71,9 @@ do
                 break;
             case "!slowmodeoff":
                 wobbleInstance.SlowModeOff();
+                break;
+            case "!title":
+                wobbleInstance.SetStreamTitle(string.Join(' ', commandWords.Skip(1)));
                 break;
             default:
                 Console.WriteLine($"Unrecognized command: '{command}'");

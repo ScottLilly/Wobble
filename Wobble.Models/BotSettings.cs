@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Wobble.Core;
 using Wobble.Models.ChatCommandHandlers;
+using Wobble.Models.TwitchEventHandler;
 
 namespace Wobble.Models;
 
@@ -15,6 +17,8 @@ public class BotSettings
 
     public List<WobbleCommand> WobbleCommands { get; } =
         new List<WobbleCommand>();
+    public List<TwitchEventResponse> TwitchEventResponses { get; } =
+        new List<TwitchEventResponse>();
     public List<ChatResponse> ChatCommands { get; } =
         new List<ChatResponse>();
     public List<CounterResponse> CounterCommands { get; } =
@@ -35,6 +39,11 @@ public class BotSettings
             : userSecretsToken;
 
         WobbleCommands.AddRange(wobbleConfiguration.WobbleCommands);
+
+        foreach (TwitchEventMessage message in wobbleConfiguration.TwitchEventMessages)
+        {
+            TwitchEventResponses.Add(new TwitchEventResponse(message.EventType, message.Message));
+        }
 
         foreach (ChatMessage message in wobbleConfiguration.ChatMessages)
         {
