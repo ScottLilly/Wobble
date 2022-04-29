@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Wobble.Models;
+using Wobble.Models.ChatCommandHandlers;
 using Wobble.Services;
 using Wobble.ViewModels;
 
@@ -24,16 +25,17 @@ do
 
     if (command.Equals("!help"))
     {
-        Console.WriteLine("!commands           Show available chat commands in Twitch chat");
-        Console.WriteLine("!clear              Clear Twitch chat messages");
-        Console.WriteLine("!emoteonlyon        Turn emote-only mode on");
-        Console.WriteLine("!emoteonlyoff       Turn emote-only mode off");
-        Console.WriteLine("!followeronlyon     Turn follower-only mode on");
-        Console.WriteLine("!followeronlyoff    Turn follower-only mode off");
-        Console.WriteLine("!subonlyon          Turn sub-only mode on");
-        Console.WriteLine("!subonlyoff         Turn sub-only mode off");
-        Console.WriteLine("!slowmodeon         Turn slow mode on");
-        Console.WriteLine("!slowmodeoff        Turn slow mode off");
+        Console.WriteLine("!commands            Show available chat commands in Twitch chat");
+        Console.WriteLine("!clear               Clear Twitch chat messages");
+        Console.WriteLine("!emoteonlyon         Turn emote-only mode on");
+        Console.WriteLine("!emoteonlyoff        Turn emote-only mode off");
+        Console.WriteLine("!followeronlyon      Turn follower-only mode on");
+        Console.WriteLine("!followeronlyoff     Turn follower-only mode off");
+        Console.WriteLine("!subonlyon           Turn sub-only mode on");
+        Console.WriteLine("!subonlyoff          Turn sub-only mode off");
+        Console.WriteLine("!slowmodeon          Turn slow mode on");
+        Console.WriteLine("!slowmodeoff         Turn slow mode off");
+        Console.WriteLine("!additionalcommands  Show additional commands");
         //Console.WriteLine("!title <title>      Change the stream title to <title>");
     }
     else
@@ -74,6 +76,12 @@ do
                 break;
             case "!title":
                 wobbleInstance.SetStreamTitle(string.Join(' ', commandWords.Skip(1)));
+                break;
+            case "!additionalcommands":
+                foreach (ChatResponse additionalCommand in wobbleInstance.AdditionalCommands)
+                {
+                    Console.WriteLine($"Command: {string.Join(" ", additionalCommand.CommandTriggers)}");
+                }
                 break;
             default:
                 Console.WriteLine($"Unrecognized command: '{command}'");

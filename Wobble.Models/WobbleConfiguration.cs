@@ -18,6 +18,7 @@ public class WobbleConfiguration
 
 public class ChatMessage
 {
+    public bool IsAdditionalCommand { get; set; } = false;
     public List<string> TriggerWords { get; set; }
     public bool RequiresArgument { get; set; } = false;
     public string MissingArgumentMessage { get; set; } = "";
