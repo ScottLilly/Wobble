@@ -1,0 +1,6 @@
+[
+  {
+    "TriggerWords": [ "Robot" ],
+    "Responses": [ "BEEP BOOP" ]
+  }
+]

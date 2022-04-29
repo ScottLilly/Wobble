@@ -40,6 +40,9 @@ namespace Wobble.ViewModels
 
         private readonly TimeSpan _limitedChattersTimeSpan = new(0, 10, 0);
 
+        public List<ChatResponse> AdditionalCommands =>
+            _chatCommandHandlers.OfType<ChatResponse>().Where(c => c.IsAdditionalCommand).ToList();
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public WobbleInstance(BotSettings botSettings)
@@ -219,6 +222,11 @@ namespace Wobble.ViewModels
             else
             {
                 SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, e.Command));
+
+                if (command is AddCommand)
+                {
+                    PersistenceService.SaveAdditionalCommands(AdditionalCommands);
+                }
             }
         }
 
