@@ -363,6 +363,7 @@ namespace Wobble.ViewModels
             }
 
             _chatCommandHandlers.Add(new AddCommand(_chatCommandHandlers));
+            _chatCommandHandlers.Add(new RemoveCommand(_chatCommandHandlers));
         }
 
         private IChatCommandHandler GetCommand(string commandText)
