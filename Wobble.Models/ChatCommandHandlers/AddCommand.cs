@@ -23,7 +23,7 @@ public class AddCommand : IChatCommandHandler
             !chatCommand.ChatMessage.IsModerator &&
             !chatCommand.ChatMessage.IsVip)
         {
-            return "";
+            return "Additional commands can only be added by the streamer, mods, or VIPs";
         }
 
         string triggerWord = chatCommand.ArgumentsAsList[0];

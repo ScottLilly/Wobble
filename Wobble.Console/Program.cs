@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
 using Wobble.Services;
@@ -89,7 +87,7 @@ do
         }
     }
 
-} while ( !command.Equals("exit", StringComparison.InvariantCultureIgnoreCase));
+} while ( !(command ?? "").Equals("exit", StringComparison.InvariantCultureIgnoreCase));
 
 WobbleInstance SetupWobbleInstance()
 {
