@@ -23,7 +23,7 @@ public class RemoveCommand : IChatCommandHandler
             !chatCommand.ChatMessage.IsModerator &&
             !chatCommand.ChatMessage.IsVip)
         {
-            return "Additional commands can only be removed by the broadcaster, mods, or VIPs";
+            return "Additional commands can only be removed by the streamer, mods, or VIPs";
         }
 
         string triggerWord = chatCommand.ArgumentsAsList[0];
