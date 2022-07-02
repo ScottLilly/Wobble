@@ -11,6 +11,7 @@ using TwitchLib.Client.Events;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
+using TwitchLib.PubSub;
 using Wobble.Core;
 using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
@@ -25,6 +26,7 @@ namespace Wobble.ViewModels
         private const string CHAT_LOG_DIRECTORY = "./ChatLogs";
 
         private readonly TwitchClient _client = new();
+        private readonly TwitchPubSub _clientPubSub = new();
         private readonly BotSettings _botSettings;
         private readonly CounterData _counterData;
         private readonly WobblePointsData _wobblePointsData;
@@ -79,6 +81,26 @@ namespace Wobble.ViewModels
             InitializeTimedMessages();
 
             Connect();
+
+            _clientPubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
+            _clientPubSub.OnChannelPointsRewardRedeemed += OnChannelPointsRewardRedeemed;
+            _clientPubSub.Connect();
+        }
+
+        private void OnPubSubServiceConnected(object sender, EventArgs e)
+        {
+            string channelId =
+                ApiHelpers.GetChannelId(_botSettings.Token, _botSettings.ChannelName);
+
+            _clientPubSub.ListenToChannelPoints(channelId);
+            _clientPubSub.SendTopics(_botSettings.Token);
+            Console.WriteLine("Connected to PubSub");
+        }
+
+        private void OnChannelPointsRewardRedeemed(object sender,
+            TwitchLib.PubSub.Events.OnChannelPointsRewardRedeemedArgs e)
+        {
+            Console.WriteLine($"{e.RewardRedeemed.Redemption.Reward.Cost} channel points redeemed ");
         }
 
         public void DisplayCommands()
