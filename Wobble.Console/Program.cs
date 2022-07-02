@@ -93,12 +93,17 @@ WobbleInstance SetupWobbleInstance()
 {
     var builder = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddUserSecrets<Program>();
+        .AddJsonFile("appsettings.json", false, true)
+        .AddUserSecrets<Program>(true);
 
     var configuration = builder.Build();
 
     string userSecretsToken =
-        configuration.AsEnumerable().First(c => c.Key == "TwitchToken").Value;
+        configuration
+            .AsEnumerable()
+            .Where(c => c.Key == "TwitchToken")
+            .First(c => !string.IsNullOrWhiteSpace(c.Value))
+            .Value;
 
     WobbleConfiguration wobbleConfiguration =
         PersistenceService.GetWobbleConfiguration();
