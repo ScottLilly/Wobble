@@ -32,6 +32,8 @@ public class WobbleInstance : INotifyPropertyChanged
     private readonly WobblePointsData _wobblePointsData;
     private readonly ConnectionCredentials _credentials;
 
+    private List<string> _automatedShoutOutsPerformedFor = new List<string>();
+
     private readonly List<IChatCommandHandler> _chatCommandHandlers =
         new List<IChatCommandHandler>();
 
@@ -84,9 +86,9 @@ public class WobbleInstance : INotifyPropertyChanged
 
         Connect();
 
-        _clientPubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
-        _clientPubSub.OnChannelPointsRewardRedeemed += OnChannelPointsRewardRedeemed;
-        _clientPubSub.Connect();
+        //_clientPubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
+        //_clientPubSub.OnChannelPointsRewardRedeemed += OnChannelPointsRewardRedeemed;
+        //_clientPubSub.Connect();
     }
 
     private void OnPubSubServiceConnected(object sender, EventArgs e)
@@ -312,6 +314,13 @@ public class WobbleInstance : INotifyPropertyChanged
     private void HandleChatMessageReceived(object sender, OnMessageReceivedArgs e)
     {
         WriteToChatLog(e.ChatMessage.DisplayName, e.ChatMessage.Message);
+
+        if (_botSettings.AutomatedShoutOuts.Any(n => n.Matches(e.ChatMessage.DisplayName)) &&
+            !_automatedShoutOutsPerformedFor.Contains(e.ChatMessage.DisplayName))
+        {
+            _automatedShoutOutsPerformedFor.Add(e.ChatMessage.DisplayName);
+            SendChatMessage($"!so {e.ChatMessage.DisplayName}");
+        }
     }
 
     private void WriteToChatLog(string chatterName, string message)

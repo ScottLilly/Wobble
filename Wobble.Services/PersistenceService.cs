@@ -15,9 +15,11 @@ namespace Wobble.Services
 
         public static WobbleConfiguration GetWobbleConfiguration()
         {
+            var text = File.ReadAllText(WOBBLE_CONFIGURATION_FILE_NAME);
+
             WobbleConfiguration wobbleConfiguration =
                 File.Exists(WOBBLE_CONFIGURATION_FILE_NAME)
-                    ? JsonConvert.DeserializeObject<WobbleConfiguration>(File.ReadAllText(WOBBLE_CONFIGURATION_FILE_NAME))
+                    ? JsonConvert.DeserializeObject<WobbleConfiguration>(text)
                     : new WobbleConfiguration();
 
             if (File.Exists(ADDITIONAL_COMMANDS_FILE_NAME))
