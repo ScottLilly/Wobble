@@ -23,6 +23,8 @@ public class BotSettings
         new List<ChatResponse>();
     public List<CounterResponse> CounterCommands { get; } =
         new List<CounterResponse>();
+    public List<string> AutomatedShoutOuts { get; } =
+        new List<string>();
 
     public BotSettings(WobbleConfiguration wobbleConfiguration, string userSecretsToken)
     {
@@ -31,6 +33,7 @@ public class BotSettings
         BotDisplayName = wobbleConfiguration.BotDisplayName;
         HandleHostRaidSubscriptionEvents = wobbleConfiguration.HandleHostRaidSubscriptionEvents;
         TimedMessages = wobbleConfiguration.TimedMessages;
+        AutomatedShoutOuts = wobbleConfiguration.AutomatedShoutOuts;
 
         // Get Twitch token from appsettings.json, if present.
         // Otherwise, this is in development and the token should be in user secrets.

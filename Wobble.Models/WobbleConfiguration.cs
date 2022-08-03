@@ -11,6 +11,7 @@ public class WobbleConfiguration
     public bool HandleHostRaidSubscriptionEvents { get; set; }
     public List<WobbleCommand> WobbleCommands { get; set; }
     public List<ChatMessage> ChatMessages { get; set; }
+    public List<string> AutomatedShoutOuts { get; set; }
     public List<TwitchEventMessage> TwitchEventMessages { get; set; }
     public List<CounterMessage> CounterMessages { get; set; }
     public TimedMessages TimedMessages { get; set; }
