@@ -31,14 +31,13 @@ public class WobbleInstance : INotifyPropertyChanged
     private readonly CounterData _counterData;
     private readonly WobblePointsData _wobblePointsData;
     private readonly ConnectionCredentials _credentials;
+    private readonly SpeechService _speechService;
 
-    private List<string> _automatedShoutOutsPerformedFor = new List<string>();
+    private readonly List<string> _automatedShoutOutsPerformedFor = new();
 
-    private readonly List<IChatCommandHandler> _chatCommandHandlers =
-        new List<IChatCommandHandler>();
+    private readonly List<IChatCommandHandler> _chatCommandHandlers = new();
 
-    private readonly List<ITwitchEventHandler> _twitchEventHandlers =
-        new List<ITwitchEventHandler>();
+    private readonly List<ITwitchEventHandler> _twitchEventHandlers = new();
 
     private Timer _timedMessagesTimer;
 
@@ -57,13 +56,21 @@ public class WobbleInstance : INotifyPropertyChanged
         _counterData = PersistenceService.GetCounterData();
         _wobblePointsData = PersistenceService.GetWobblePointsData();
 
+        if (_botSettings.AzureCognitiveServicesKey.IsNotNullEmptyOrWhiteSpace() &&
+            _botSettings.AzureCognitiveServicesRegion.IsNotNullEmptyOrWhiteSpace())
+        {
+            _speechService = 
+                new SpeechService(_botSettings.AzureCognitiveServicesKey, 
+                    _botSettings.AzureCognitiveServicesRegion,
+                    _botSettings.AzureTtsVoiceName);
+        }
+
         _credentials =
             new ConnectionCredentials(
                 string.IsNullOrWhiteSpace(_botSettings.BotAccountName)
                     ? botSettings.ChannelName
                     : _botSettings.BotAccountName, _botSettings.Token, disableUsernameCheck: true);
 
-        _client.OnChannelStateChanged += HandleChannelStateChanged;
         _client.OnChatCommandReceived += HandleChatCommandReceived;
         _client.OnMessageReceived += HandleChatMessageReceived;
         _client.OnDisconnected += HandleDisconnected;
@@ -115,6 +122,11 @@ public class WobbleInstance : INotifyPropertyChanged
     public void ClearChat()
     {
         _client.ClearChat(_botSettings.ChannelName);
+    }
+
+    public void Speak(string message)
+    {
+        _speechService?.SpeakAsync(message);
     }
 
     public void Disconnect()
@@ -220,10 +232,6 @@ public class WobbleInstance : INotifyPropertyChanged
         {
             SendChatMessage(message);
         }
-    }
-
-    private void HandleChannelStateChanged(object sender, OnChannelStateChangedArgs e)
-    {
     }
 
     private void HandleChatCommandReceived(object sender, OnChatCommandReceivedArgs e)

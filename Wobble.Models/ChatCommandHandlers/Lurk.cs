@@ -6,11 +6,9 @@ namespace Wobble.Models.ChatCommandHandlers;
 
 public class Lurk : IWobbleCommandHandler
 {
-    private readonly List<string> _lurkers =
-        new List<string>();
+    private readonly List<string> _lurkers = new();
 
-    public List<string> CommandTriggers =>
-        new List<string> { "lurk", "unlurk" };
+    public List<string> CommandTriggers => new() { "lurk", "unlurk" };
 
     public string GetResponse(string botDisplayName, ChatCommand chatCommand)
     {

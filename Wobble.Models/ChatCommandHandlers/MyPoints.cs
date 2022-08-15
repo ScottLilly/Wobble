@@ -9,8 +9,7 @@ public class MyPoints : IWobbleCommandHandler
 {
     private readonly WobblePointsData _wobblePointsData;
 
-    public List<string> CommandTriggers { get; } =
-        new List<string> { "MyPoints" };
+    public List<string> CommandTriggers { get; } = new() { "MyPoints" };
 
     public MyPoints(WobblePointsData wobblePointsData)
     {

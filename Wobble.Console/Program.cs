@@ -81,6 +81,9 @@ do
                     Console.WriteLine($"Command: {string.Join(" ", additionalCommand.CommandTriggers)}");
                 }
                 break;
+            case "!say":
+                wobbleInstance.Speak(string.Join(' ', commandWords.Skip(1)));
+                break;
             default:
                 Console.WriteLine($"Unrecognized command: '{command}'");
                 break;
@@ -105,11 +108,18 @@ WobbleInstance SetupWobbleInstance()
             .First(c => !string.IsNullOrWhiteSpace(c.Value))
             .Value;
 
+    string azureCognitiveServiceKey =
+        configuration
+            .AsEnumerable()
+            .Where(c => c.Key == "AzureCognitiveServicesKey")
+            .First(c => !string.IsNullOrWhiteSpace(c.Value))
+            .Value;
+
     WobbleConfiguration wobbleConfiguration =
         PersistenceService.GetWobbleConfiguration();
 
     BotSettings botSettings =
-        new BotSettings(wobbleConfiguration, userSecretsToken);
+        new BotSettings(wobbleConfiguration, userSecretsToken, azureCognitiveServiceKey);
 
     return new WobbleInstance(botSettings);
 }

@@ -7,8 +7,7 @@ namespace Wobble.Models.ChatCommandHandlers;
 
 public class Roller : IWobbleCommandHandler
 {
-    public List<string> CommandTriggers =>
-        new List<string> {"roll"};
+    public List<string> CommandTriggers => new() {"roll"};
 
     string IChatCommandHandler.GetResponse(string botDisplayName, ChatCommand chatCommand)
     {
