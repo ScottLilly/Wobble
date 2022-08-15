@@ -4,8 +4,7 @@ namespace Wobble.Models;
 
 public class CounterData
 {
-    public List<CommandCounter> CommandCounters { get; set; } =
-        new List<CommandCounter>();
+    public List<CommandCounter> CommandCounters { get; set; } = new();
 }
 
 public class CommandCounter

@@ -13,20 +13,19 @@ public class BotSettings
     public string BotDisplayName { get; }
     public bool HandleHostRaidSubscriptionEvents { get; }
     public string Token { get; }
+    public string AzureCognitiveServicesRegion { get; }
+    public string AzureCognitiveServicesKey { get; }
+    public string AzureTtsVoiceName { get; }
     public TimedMessages TimedMessages { get; }
 
-    public List<WobbleCommand> WobbleCommands { get; } =
-        new List<WobbleCommand>();
-    public List<TwitchEventResponse> TwitchEventResponses { get; } =
-        new List<TwitchEventResponse>();
-    public List<ChatResponse> ChatCommands { get; } =
-        new List<ChatResponse>();
-    public List<CounterResponse> CounterCommands { get; } =
-        new List<CounterResponse>();
-    public List<string> AutomatedShoutOuts { get; } =
-        new List<string>();
+    public List<WobbleCommand> WobbleCommands { get; } = new();
+    public List<TwitchEventResponse> TwitchEventResponses { get; } = new();
+    public List<ChatResponse> ChatCommands { get; } = new();
+    public List<CounterResponse> CounterCommands { get; } = new();
+    public List<string> AutomatedShoutOuts { get; }
 
-    public BotSettings(WobbleConfiguration wobbleConfiguration, string userSecretsToken)
+    public BotSettings(WobbleConfiguration wobbleConfiguration, string userSecretsToken,
+        string azureCognitiveServicesKey)
     {
         ChannelName = wobbleConfiguration.ChannelName;
         BotAccountName = wobbleConfiguration.BotAccountName;
@@ -40,6 +39,15 @@ public class BotSettings
         Token = wobbleConfiguration.TwitchToken.IsNotNullEmptyOrWhiteSpace()
             ? wobbleConfiguration.TwitchToken
             : userSecretsToken;
+
+        AzureCognitiveServicesRegion = 
+            wobbleConfiguration.AzureCognitiveServicesRegion;
+        AzureCognitiveServicesKey = 
+            wobbleConfiguration.AzureCognitiveServicesKey.IsNotNullEmptyOrWhiteSpace()
+            ? wobbleConfiguration.AzureCognitiveServicesKey
+            : azureCognitiveServicesKey;
+        AzureTtsVoiceName =
+            wobbleConfiguration.AzureTtsVoiceName;
 
         WobbleCommands.AddRange(wobbleConfiguration.WobbleCommands);
 

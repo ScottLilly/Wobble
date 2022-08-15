@@ -7,6 +7,9 @@ public class WobbleConfiguration
     public string ChannelName { get; set; }
     public string BotAccountName { get; set; }
     public string TwitchToken { get; set; }
+    public string AzureCognitiveServicesRegion { get; set; }
+    public string AzureCognitiveServicesKey { get; set; }
+    public string AzureTtsVoiceName { get; set; }
     public string BotDisplayName { get; set; }
     public bool HandleHostRaidSubscriptionEvents { get; set; }
     public List<WobbleCommand> WobbleCommands { get; set; }

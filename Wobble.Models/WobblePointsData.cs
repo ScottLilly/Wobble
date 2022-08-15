@@ -8,8 +8,7 @@ public class WobblePointsData
     public string PointsName { get; set; } =
         "WobbleBucks";
 
-    public List<UserPoint> UserPoints { get; set; } =
-        new List<UserPoint>();
+    public List<UserPoint> UserPoints { get; set; } = new();
 
     public class UserPoint
     {

@@ -6,8 +6,7 @@ namespace Wobble.Models.ChatCommandHandlers;
 
 public class RockPaperScissorsGame : IWobbleCommandHandler
 {
-    public List<string> CommandTriggers =>
-        new List<string> { "rock", "paper", "scissors" };
+    public List<string> CommandTriggers => new() { "rock", "paper", "scissors" };
 
     public string GetResponse(string botDisplayName, ChatCommand chatCommand)
     {

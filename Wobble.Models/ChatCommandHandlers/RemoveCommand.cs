@@ -9,8 +9,7 @@ public class RemoveCommand : IChatCommandHandler
 {
     private readonly List<IChatCommandHandler> _chatCommandHandlers;
 
-    public List<string> CommandTriggers { get; } =
-        new List<string> { "removecommand" };
+    public List<string> CommandTriggers { get; } = new() { "removecommand" };
 
     public RemoveCommand(List<IChatCommandHandler> chatCommandHandlers)
     {

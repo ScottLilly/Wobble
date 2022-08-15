@@ -9,8 +9,7 @@ public class AddCommand : IChatCommandHandler
 {
     private readonly List<IChatCommandHandler> _chatCommandHandlers;
 
-    public List<string> CommandTriggers { get; } =
-        new List<string> { "addcommand" };
+    public List<string> CommandTriggers { get; } = new() { "addcommand" };
 
     public AddCommand(List<IChatCommandHandler> chatCommandHandlers)
     {
