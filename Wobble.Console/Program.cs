@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Wobble.Core;
 using Wobble.Models;
 using Wobble.Models.ChatCommandHandlers;
 using Wobble.Services;
@@ -72,9 +73,6 @@ do
             case "!slowmodeoff":
                 wobbleInstance.SlowModeOff();
                 break;
-            case "!title":
-                wobbleInstance.SetStreamTitle(string.Join(' ', commandWords.Skip(1)));
-                break;
             case "!additionalcommands":
                 foreach (ChatResponse additionalCommand in wobbleInstance.AdditionalCommands)
                 {
@@ -94,32 +92,45 @@ do
 
 WobbleInstance SetupWobbleInstance()
 {
-    var builder = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", false, true)
-        .AddUserSecrets<Program>(true);
+    var secrets = new ConfigurationBuilder()
+        .AddUserSecrets<Program>(true)
+        .Build();
 
-    var configuration = builder.Build();
+    var secretsAzureAccounts =
+        secrets.GetSection("AzureAccounts")
+            .Get<List<AzureAccount>>();
 
-    string userSecretsToken =
-        configuration
-            .AsEnumerable()
-            .Where(c => c.Key == "TwitchToken")
-            .First(c => !string.IsNullOrWhiteSpace(c.Value))
-            .Value;
-
-    string azureCognitiveServiceKey =
-        configuration
-            .AsEnumerable()
-            .Where(c => c.Key == "AzureCognitiveServicesKey")
-            .First(c => !string.IsNullOrWhiteSpace(c.Value))
-            .Value;
+    var secretsTwitchAccounts = 
+        secrets.GetSection("TwitchAccounts")
+            .Get<List<TwitchAccount>>();
 
     WobbleConfiguration wobbleConfiguration =
         PersistenceService.GetWobbleConfiguration();
 
+    // Populate AzureAccount keys from user secrets, if missing in appsettings.json
+    foreach (AzureAccount azureAccount in wobbleConfiguration
+                 .AzureAccounts.Where(aa => string.IsNullOrWhiteSpace(aa.Key)))
+    {
+        azureAccount.Key =
+            secretsAzureAccounts
+                .FirstOrDefault(saa =>
+                    saa.Service.Matches(azureAccount.Service) &&
+                    saa.Region.Matches(azureAccount.Region))?.Key ?? "";
+    }
+
+    // Populate TwitchAccount keys from user secrets, if missing in appsettings.json
+    foreach (TwitchAccount twitchAccount in wobbleConfiguration
+                 .TwitchAccounts.Where(ta => string.IsNullOrWhiteSpace(ta.AuthToken)))
+    {
+        twitchAccount.AuthToken =
+            secretsTwitchAccounts
+                .FirstOrDefault(sta =>
+                    sta.Type.Matches(twitchAccount.Type) &&
+                    sta.Name.Matches(twitchAccount.Name))?.AuthToken ?? "";
+    }
+
     BotSettings botSettings =
-        new BotSettings(wobbleConfiguration, userSecretsToken, azureCognitiveServiceKey);
+        new BotSettings(wobbleConfiguration);
 
     return new WobbleInstance(botSettings);
 }

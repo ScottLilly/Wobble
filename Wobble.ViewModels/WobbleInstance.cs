@@ -25,13 +25,16 @@ public class WobbleInstance : INotifyPropertyChanged
 {
     private const string CHAT_LOG_DIRECTORY = "./ChatLogs";
 
-    private readonly TwitchClient _client = new();
-    private readonly TwitchPubSub _clientPubSub = new();
     private readonly BotSettings _botSettings;
+
+    private readonly TwitchPubSub _twitchEventWatcherClient = new();
+    private readonly TwitchClient _twitchChatClient = new();
     private readonly CounterData _counterData;
     private readonly WobblePointsData _wobblePointsData;
-    private readonly ConnectionCredentials _credentials;
-    private readonly SpeechService _speechService;
+
+    // Credentials used for client that "speaks" in chat
+    private readonly ConnectionCredentials _twitchBotCredentials;
+    private SpeechService _speechService;
 
     private readonly List<string> _automatedShoutOutsPerformedFor = new();
 
@@ -53,36 +56,28 @@ public class WobbleInstance : INotifyPropertyChanged
     public WobbleInstance(BotSettings botSettings)
     {
         _botSettings = botSettings;
+
         _counterData = PersistenceService.GetCounterData();
         _wobblePointsData = PersistenceService.GetWobblePointsData();
 
-        if (_botSettings.AzureCognitiveServicesKey.IsNotNullEmptyOrWhiteSpace() &&
-            _botSettings.AzureCognitiveServicesRegion.IsNotNullEmptyOrWhiteSpace())
-        {
-            _speechService = 
-                new SpeechService(_botSettings.AzureCognitiveServicesKey, 
-                    _botSettings.AzureCognitiveServicesRegion,
-                    _botSettings.AzureTtsVoiceName);
-        }
+        SetupAzureTtsService();
 
-        _credentials =
-            new ConnectionCredentials(
-                string.IsNullOrWhiteSpace(_botSettings.BotAccountName)
-                    ? botSettings.ChannelName
-                    : _botSettings.BotAccountName, _botSettings.Token, disableUsernameCheck: true);
+        var twitchBroadcasterCredentials = new ConnectionCredentials(
+            _botSettings.TwitchBroadcasterAccount.Name, 
+            _botSettings.TwitchBroadcasterAccount.AuthToken, 
+            disableUsernameCheck: true);
 
-        _client.OnChatCommandReceived += HandleChatCommandReceived;
-        _client.OnMessageReceived += HandleChatMessageReceived;
-        _client.OnDisconnected += HandleDisconnected;
+        _twitchBotCredentials =
+            _botSettings.TwitchBotAccount == null
+                ? twitchBroadcasterCredentials
+                : new ConnectionCredentials(
+                    _botSettings.TwitchBotAccount.Name,
+                    _botSettings.TwitchBotAccount.AuthToken,
+                    disableUsernameCheck: true);
 
-        if (_botSettings.HandleHostRaidSubscriptionEvents)
-        {
-            _client.OnRaidNotification += HandleRaidNotification;
-            _client.OnBeingHosted += HandleBeingHosted;
-            //_client.OnNewSubscriber += HandleNewSubscriber;
-            //_client.OnReSubscriber += HandleReSubscriber;
-            //_client.OnGiftedSubscription += HandleGiftedSubscription;
-        }
+        _twitchChatClient.OnChatCommandReceived += HandleChatCommandReceived;
+        _twitchChatClient.OnMessageReceived += HandleChatMessageReceived;
+        _twitchChatClient.OnDisconnected += HandleDisconnected;
 
         PopulateChatCommandHandlers();
 
@@ -93,19 +88,35 @@ public class WobbleInstance : INotifyPropertyChanged
 
         Connect();
 
-        //_clientPubSub.OnPubSubServiceConnected += OnPubSubServiceConnected;
-        //_clientPubSub.OnChannelPointsRewardRedeemed += OnChannelPointsRewardRedeemed;
-        //_clientPubSub.Connect();
+        _twitchEventWatcherClient.OnPubSubServiceConnected += 
+            OnMonitorTwitchEventsServiceConnected;
+        _twitchEventWatcherClient.OnChannelPointsRewardRedeemed += 
+            OnChannelPointsRewardRedeemed;
+        _twitchEventWatcherClient.Connect();
     }
 
-    private void OnPubSubServiceConnected(object sender, EventArgs e)
+    private void SetupAzureTtsService()
+    {
+        if (_botSettings.AzureTtsAccount.Key.IsNotNullEmptyOrWhiteSpace() &&
+            _botSettings.AzureTtsAccount.Region.IsNotNullEmptyOrWhiteSpace())
+        {
+            _speechService =
+                new SpeechService(_botSettings.AzureTtsAccount.Key,
+                    _botSettings.AzureTtsAccount.Region,
+                    _botSettings.AzureTtsAccount.AzureTtsVoiceName);
+        }
+    }
+
+    private void OnMonitorTwitchEventsServiceConnected(object sender, EventArgs e)
     {
         string channelId =
-            ApiHelpers.GetChannelId(_botSettings.Token, _botSettings.ChannelName);
+            ApiHelpers.GetChannelId(_botSettings.TwitchBroadcasterAccount.AuthToken, 
+                _botSettings.TwitchBroadcasterAccount.Name);
 
-        _clientPubSub.ListenToChannelPoints(channelId);
-        _clientPubSub.SendTopics(_botSettings.Token);
-        Console.WriteLine("Connected to PubSub");
+        _twitchEventWatcherClient.ListenToChannelPoints(channelId);
+        _twitchEventWatcherClient.SendTopics(_botSettings.TwitchBroadcasterAccount.AuthToken);
+
+        LogMessage("Connected to PubSub");
     }
 
     private void OnChannelPointsRewardRedeemed(object sender,
@@ -121,7 +132,7 @@ public class WobbleInstance : INotifyPropertyChanged
 
     public void ClearChat()
     {
-        _client.ClearChat(_botSettings.ChannelName);
+        _twitchChatClient.ClearChat(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void Speak(string message)
@@ -133,54 +144,57 @@ public class WobbleInstance : INotifyPropertyChanged
     {
         // TODO: Find a better place to update WobblePointsData file
         PersistenceService.SaveWobblePointsData(_wobblePointsData);
-        _client.Disconnect();
+
+        if (_botSettings.HandleHostRaidSubscriptionEvents)
+        {
+            UnsubscribeFromHostRaidSubscriptionEvents();
+        }
+
+        _twitchChatClient.Disconnect();
     }
 
     #region Public stream management functions
 
-    public void SetStreamTitle(string title)
-    {
-        // TODO
-    }
-
     public void EmoteModeOnlyOn()
     {
-        _client.EmoteOnlyOn(_botSettings.ChannelName);
+        _twitchChatClient.EmoteOnlyOn(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void EmoteModeOnlyOff()
     {
-        _client.EmoteOnlyOff(_botSettings.ChannelName);
+        _twitchChatClient.EmoteOnlyOff(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void FollowersOnlyOn()
     {
-        _client.FollowersOnlyOn(_botSettings.ChannelName, _limitedChattersTimeSpan);
+        _twitchChatClient.FollowersOnlyOn(_botSettings.TwitchBroadcasterAccount.Name,
+            _limitedChattersTimeSpan);
     }
 
     public void FollowersOnlyOff()
     {
-        _client.FollowersOnlyOff(_botSettings.ChannelName);
+        _twitchChatClient.FollowersOnlyOff(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void SubscribersOnlyOn()
     {
-        _client.SubscribersOnlyOn(_botSettings.ChannelName);
+        _twitchChatClient.SubscribersOnlyOn(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void SubscribersOnlyOff()
     {
-        _client.SubscribersOnlyOff(_botSettings.ChannelName);
+        _twitchChatClient.SubscribersOnlyOff(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     public void SlowModeOn()
     {
-        _client.SlowModeOn(_botSettings.ChannelName, _limitedChattersTimeSpan);
+        _twitchChatClient.SlowModeOn(_botSettings.TwitchBroadcasterAccount.Name, 
+            _limitedChattersTimeSpan);
     }
 
     public void SlowModeOff()
     {
-        _client.SlowModeOff(_botSettings.ChannelName);
+        _twitchChatClient.SlowModeOff(_botSettings.TwitchBroadcasterAccount.Name);
     }
 
     #endregion
@@ -189,8 +203,10 @@ public class WobbleInstance : INotifyPropertyChanged
 
     private void Connect()
     {
-        _client.Initialize(_credentials, _botSettings.ChannelName);
-        _client.Connect();
+        _twitchChatClient.Initialize(_twitchBotCredentials, 
+            _botSettings.TwitchBroadcasterAccount.Name);
+        _twitchChatClient.Connect();
+
     }
 
     private void HandleDisconnected(object sender, OnDisconnectedEventArgs e)
@@ -201,11 +217,11 @@ public class WobbleInstance : INotifyPropertyChanged
 
     private void UnsubscribeFromHostRaidSubscriptionEvents()
     {
-        _client.OnRaidNotification -= HandleRaidNotification;
-        _client.OnBeingHosted -= HandleBeingHosted;
-        //_client.OnNewSubscriber -= HandleNewSubscriber;
-        //_client.OnReSubscriber -= HandleReSubscriber;
-        //_client.OnGiftedSubscription -= HandleGiftedSubscription;
+        _twitchChatClient.OnRaidNotification -= HandleRaidNotification;
+        _twitchChatClient.OnBeingHosted -= HandleBeingHosted;
+        _twitchChatClient.OnNewSubscriber -= HandleNewSubscriber;
+        _twitchChatClient.OnReSubscriber -= HandleReSubscriber;
+        _twitchChatClient.OnGiftedSubscription -= HandleGiftedSubscription;
     }
 
     #endregion
@@ -225,7 +241,7 @@ public class WobbleInstance : INotifyPropertyChanged
 
             if (command != null)
             {
-                SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, null));
+                SendChatMessage(command.GetResponse(_botSettings.TwitchBotAccount.Name, null));
             }
         }
         else
@@ -255,7 +271,7 @@ public class WobbleInstance : INotifyPropertyChanged
         }
         else
         {
-            SendChatMessage(command.GetResponse(_botSettings.BotDisplayName, e.Command));
+            SendChatMessage(command.GetResponse(_botSettings.TwitchBotAccount.Name, e.Command));
 
             if (command is AddCommand)
             {
@@ -266,6 +282,9 @@ public class WobbleInstance : INotifyPropertyChanged
 
     private void HandleRaidNotification(object sender, OnRaidNotificationArgs e)
     {
+        WriteToChatLog("WobbleBot", 
+            $"Received raid from: {e.RaidNotification.DisplayName}");
+
         var eventMessage =
             _twitchEventHandlers.FirstOrDefault(t => t.EventName.Matches("Raid"));
 
@@ -282,6 +301,9 @@ public class WobbleInstance : INotifyPropertyChanged
 
     private void HandleBeingHosted(object sender, OnBeingHostedArgs e)
     {
+        WriteToChatLog("WobbleBot", 
+            $"Received host from: {e.BeingHostedNotification.HostedByChannel}");
+
         var eventMessage =
             _twitchEventHandlers.FirstOrDefault(t => t.EventName.Matches("Host"));
 
@@ -331,7 +353,13 @@ public class WobbleInstance : INotifyPropertyChanged
         }
     }
 
-    private void WriteToChatLog(string chatterName, string message)
+    private void LogMessage(string message)
+    {
+        Console.WriteLine($"[Wobble]: {message}");
+        WriteToChatLog("Wobble", message);
+    }
+
+    private static void WriteToChatLog(string chatterName, string message)
     {
         if (!Directory.Exists(CHAT_LOG_DIRECTORY))
         {
@@ -434,7 +462,7 @@ public class WobbleInstance : INotifyPropertyChanged
 
         PersistenceService.SaveCounterData(_counterData);
 
-        return command.GetResponse(_botSettings.BotDisplayName, null)
+        return command.GetResponse(_botSettings.TwitchBotAccount.Name, null)
             .Replace("{counter}", commandCounter.Count.ToString("N0"));
     }
 
@@ -445,22 +473,8 @@ public class WobbleInstance : INotifyPropertyChanged
             return;
         }
 
-        _client.SendMessage(_botSettings.ChannelName, message);
-        WriteToChatLog(_botSettings.BotDisplayName, message);
-    }
-
-    private void GiveWobblePoints(string userId)
-    {
-        if (_wobblePointsData.UserPoints.None(up => up.Name.Matches(userId)))
-        {
-            _wobblePointsData.UserPoints.Add(new WobblePointsData.UserPoint
-            {
-                Name = userId,
-                Points = 0
-            });
-        }
-
-        _wobblePointsData.UserPoints.First(up => up.Name.Matches(userId)).Points += 10;
+        _twitchChatClient.SendMessage(_botSettings.TwitchBroadcasterAccount.Name, message);
+        WriteToChatLog(_botSettings.TwitchBotAccount.Name, message);
     }
 
     #endregion
