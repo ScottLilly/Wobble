@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Wobble.Core;
 using Wobble.Models.ChatCommandHandlers;
 using Wobble.Models.TwitchEventHandler;
@@ -8,48 +8,32 @@ namespace Wobble.Models;
 
 public class BotSettings
 {
-    public string ChannelName { get; }
-    public string BotAccountName { get; }
-    public string BotDisplayName { get; }
-    public bool HandleHostRaidSubscriptionEvents { get; }
-    public string Token { get; }
-    public string AzureCognitiveServicesRegion { get; }
-    public string AzureCognitiveServicesKey { get; }
-    public string AzureTtsVoiceName { get; }
-    public TimedMessages TimedMessages { get; }
+    private readonly WobbleConfiguration _wobbleConfiguration;
 
-    public List<WobbleCommand> WobbleCommands { get; } = new();
+    public TwitchAccount TwitchBroadcasterAccount =>
+        _wobbleConfiguration.TwitchAccounts.First(a => a.Type.Matches("Broadcaster"));
+    public TwitchAccount TwitchBotAccount =>
+        _wobbleConfiguration.TwitchAccounts.FirstOrDefault(a => a.Type.Matches("Bot")) ??
+        TwitchBroadcasterAccount;
+    public List<AzureAccount> AzureAccounts =>
+        _wobbleConfiguration.AzureAccounts;
+    public AzureAccount AzureTtsAccount =>
+        AzureAccounts.FirstOrDefault(aa => aa.Service.Matches("CognitiveServicesSpeech"));
+    public bool HandleHostRaidSubscriptionEvents =>
+        _wobbleConfiguration.HandleHostRaidSubscriptionEvents;
+    public List<string> AutomatedShoutOuts =>
+        _wobbleConfiguration.AutomatedShoutOuts;
+    public TimedMessages TimedMessages =>
+        _wobbleConfiguration.TimedMessages;
+    public List<WobbleCommand> WobbleCommands =>
+        _wobbleConfiguration.WobbleCommands;
     public List<TwitchEventResponse> TwitchEventResponses { get; } = new();
     public List<ChatResponse> ChatCommands { get; } = new();
     public List<CounterResponse> CounterCommands { get; } = new();
-    public List<string> AutomatedShoutOuts { get; }
 
-    public BotSettings(WobbleConfiguration wobbleConfiguration, string userSecretsToken,
-        string azureCognitiveServicesKey)
+    public BotSettings(WobbleConfiguration wobbleConfiguration)
     {
-        ChannelName = wobbleConfiguration.ChannelName;
-        BotAccountName = wobbleConfiguration.BotAccountName;
-        BotDisplayName = wobbleConfiguration.BotDisplayName;
-        HandleHostRaidSubscriptionEvents = wobbleConfiguration.HandleHostRaidSubscriptionEvents;
-        TimedMessages = wobbleConfiguration.TimedMessages;
-        AutomatedShoutOuts = wobbleConfiguration.AutomatedShoutOuts;
-
-        // Get Twitch token from appsettings.json, if present.
-        // Otherwise, this is in development and the token should be in user secrets.
-        Token = wobbleConfiguration.TwitchToken.IsNotNullEmptyOrWhiteSpace()
-            ? wobbleConfiguration.TwitchToken
-            : userSecretsToken;
-
-        AzureCognitiveServicesRegion = 
-            wobbleConfiguration.AzureCognitiveServicesRegion;
-        AzureCognitiveServicesKey = 
-            wobbleConfiguration.AzureCognitiveServicesKey.IsNotNullEmptyOrWhiteSpace()
-            ? wobbleConfiguration.AzureCognitiveServicesKey
-            : azureCognitiveServicesKey;
-        AzureTtsVoiceName =
-            wobbleConfiguration.AzureTtsVoiceName;
-
-        WobbleCommands.AddRange(wobbleConfiguration.WobbleCommands);
+        _wobbleConfiguration = wobbleConfiguration;
 
         foreach (TwitchEventMessage message in wobbleConfiguration.TwitchEventMessages)
         {
