@@ -11,14 +11,15 @@ public class BotSettings
     private readonly WobbleConfiguration _wobbleConfiguration;
 
     public TwitchAccount TwitchBroadcasterAccount =>
-        _wobbleConfiguration.TwitchAccounts.First(a => a.Type.Matches("Broadcaster"));
+        _wobbleConfiguration.TwitchAccounts
+            .First(a => a.Type.Matches("Broadcaster"));
     public TwitchAccount TwitchBotAccount =>
-        _wobbleConfiguration.TwitchAccounts.FirstOrDefault(a => a.Type.Matches("Bot")) ??
+        _wobbleConfiguration.TwitchAccounts
+            .FirstOrDefault(a => a.Type.Matches("Bot")) ??
         TwitchBroadcasterAccount;
-    public List<AzureAccount> AzureAccounts =>
-        _wobbleConfiguration.AzureAccounts;
     public AzureAccount AzureTtsAccount =>
-        AzureAccounts.FirstOrDefault(aa => aa.Service.Matches("CognitiveServicesSpeech"));
+        _wobbleConfiguration.AzureAccounts
+            .FirstOrDefault(aa => aa.Service.Matches("CognitiveServicesSpeech"));
     public bool HandleHostRaidSubscriptionEvents =>
         _wobbleConfiguration.HandleHostRaidSubscriptionEvents;
     public List<string> AutomatedShoutOuts =>

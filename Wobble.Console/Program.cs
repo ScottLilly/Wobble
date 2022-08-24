@@ -44,37 +44,37 @@ do
         switch (commandWords[0].ToLowerInvariant())
         {
             case "!commands":
-                wobbleInstance.DisplayCommands();
+                wobbleInstance.ChatConnector.DisplayCommandTriggerWords();
                 break;
             case "!clear":
-                wobbleInstance.ClearChat();
+                wobbleInstance.ChatConnector.ClearChat();
                 break;
             case "!emoteonlyon":
-                wobbleInstance.EmoteModeOnlyOn();
+                wobbleInstance.ChatConnector.EmoteModeOnlyOn();
                 break;
             case "!emoteonlyoff":
-                wobbleInstance.EmoteModeOnlyOff();
+                wobbleInstance.ChatConnector.EmoteModeOnlyOff();
                 break;
             case "!followeronlyon":
-                wobbleInstance.FollowersOnlyOn();
+                wobbleInstance.ChatConnector.FollowersOnlyOn();
                 break;
             case "!followeronlyoff":
-                wobbleInstance.FollowersOnlyOff();
+                wobbleInstance.ChatConnector.FollowersOnlyOff();
                 break;
             case "!subonlyon":
-                wobbleInstance.SubscribersOnlyOn();
+                wobbleInstance.ChatConnector.SubscribersOnlyOn();
                 break;
             case "!subonlyoff":
-                wobbleInstance.SubscribersOnlyOff();
+                wobbleInstance.ChatConnector.SubscribersOnlyOff();
                 break;
             case "!slowmodeon":
-                wobbleInstance.SlowModeOn();
+                wobbleInstance.ChatConnector.SlowModeOn();
                 break;
             case "!slowmodeoff":
-                wobbleInstance.SlowModeOff();
+                wobbleInstance.ChatConnector.SlowModeOff();
                 break;
             case "!additionalcommands":
-                foreach (ChatResponse additionalCommand in wobbleInstance.AdditionalCommands)
+                foreach (ChatResponse additionalCommand in wobbleInstance.ChatConnector.AdditionalCommands)
                 {
                     Console.WriteLine($"Command: {string.Join(" ", additionalCommand.CommandTriggers)}");
                 }
