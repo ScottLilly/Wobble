@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Wobble.Core;
 using Wobble.Models;
 using Wobble.Models.CustomEventArgs;
@@ -17,12 +18,12 @@ public class WobbleInstance
 
     public WobbleInstance(BotSettings botSettings)
     {
-        var pubSubConnector = 
-            new TwitchPubSubConnector(botSettings);
-        pubSubConnector.OnMessageToLog += HandleLogMessageRaised;
-        pubSubConnector.Start();
+        //var pubSubConnector = 
+        //    new TwitchPubSubConnector(botSettings);
+        //pubSubConnector.OnMessageToLog += HandleLogMessageRaised;
+        //pubSubConnector.Start();
 
-        ChatConnector = 
+        ChatConnector =
             new TwitchChatConnector(botSettings,
                 PersistenceService.GetCounterData(),
                 PersistenceService.GetWobblePointsData());
@@ -45,6 +46,24 @@ public class WobbleInstance
     public void Speak(string message)
     {
         _speechService?.SpeakAsync(message);
+    }
+
+    public void SetTimedMessage(int minutes, string phrase = "")
+    {
+        if(minutes <= 0)
+        {
+            return;
+        }
+
+        if(string.IsNullOrWhiteSpace(phrase))
+        {
+            phrase = minutes == 1
+                ? $"Attention. The timer is up. 1 minute has passed"
+                : $"Attention. The timer is up. {minutes} minutes have passed";
+        }
+
+        Task.Delay(TimeSpan.FromMinutes(minutes))
+            .ContinueWith(task => Speak(phrase));
     }
 
     private void HandleLogMessageRaised(object sender, LogMessageEventArgs e)

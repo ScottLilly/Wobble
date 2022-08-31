@@ -35,6 +35,7 @@ do
         Console.WriteLine("!slowmodeon          Turn slow mode on");
         Console.WriteLine("!slowmodeoff         Turn slow mode off");
         Console.WriteLine("!additionalcommands  Show additional commands");
+        Console.WriteLine("!timer <n [minutes]> <phrase [optional]>");
         //Console.WriteLine("!title <title>      Change the stream title to <title>");
     }
     else
@@ -81,6 +82,17 @@ do
                 break;
             case "!say":
                 wobbleInstance.Speak(string.Join(' ', commandWords.Skip(1)));
+                break;
+            case "!timer":
+                if(commandWords.Length > 1)
+                {
+                    if (int.TryParse(commandWords[1], out int minutes))
+                    {
+                        wobbleInstance
+                            .SetTimedMessage(minutes, 
+                            string.Join(' ', commandWords.Skip(2)));
+                    }
+                }
                 break;
             default:
                 Console.WriteLine($"Unrecognized command: '{command}'");

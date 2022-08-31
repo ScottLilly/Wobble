@@ -1,18 +1,16 @@
 ﻿using System;
-using TwitchLib.Client.Events;
-using TwitchLib.Client.Models;
 using TwitchLib.PubSub;
-using TwitchLib.PubSub.Enums;
+using TwitchLib.PubSub.Events;
 using Wobble.Core;
 using Wobble.Models.CustomEventArgs;
-using Wobble.Models.TwitchEventHandler;
 
 namespace Wobble.Models;
 
 public class TwitchPubSubConnector
 {
     private readonly TwitchAccount _broadcasterAccount;
-    private readonly TwitchPubSub _chatClient = new();
+    private readonly TwitchPubSub _pubSubClient;
+    private readonly string _channelId;
     private string ChannelName => _broadcasterAccount.Name;
 
     public event EventHandler<LogMessageEventArgs> OnMessageToLog;
@@ -20,12 +18,11 @@ public class TwitchPubSubConnector
     public TwitchPubSubConnector(BotSettings botSettings)
     {
         _broadcasterAccount = botSettings.TwitchBroadcasterAccount;
+        _channelId =
+            ApiHelpers.GetChannelId(_broadcasterAccount.AuthToken,
+                ChannelName);
 
-        var connectionCredentials = 
-            new ConnectionCredentials(
-                _broadcasterAccount.Name,
-                _broadcasterAccount.AuthToken,
-                disableUsernameCheck: true);
+        _pubSubClient = new TwitchPubSub();
     }
 
     public void Start()
@@ -36,111 +33,115 @@ public class TwitchPubSubConnector
 
     public void Stop()
     {
-        RaiseLogMessage("[TwitchPubSubConnector] Stopping");
+        RaiseLogMessage("Stopping");
         UnsubscribeFromEvents();
-        _chatClient.Disconnect();
-        RaiseLogMessage("[TwitchPubSubConnector] Stopped");
-    }
-
-    private void Connect()
-    {
-        RaiseLogMessage("[TwitchPubSubConnector] Start connecting");
-        _chatClient.Connect();
+        _pubSubClient.Disconnect();
+        RaiseLogMessage("Stopped");
     }
 
     private void SubscribeToEvents()
     {
-        //_twitchEventWatcherClient.OnPubSubServiceConnected +=
-        //    OnMonitorTwitchEventsServiceConnected;
-        //_twitchEventWatcherClient.OnChannelPointsRewardRedeemed +=
-        //    OnChannelPointsRewardRedeemed;
+        _pubSubClient.OnPubSubServiceConnected += HandlePubSubServiceConnected;
+        _pubSubClient.OnStreamUp += HandleStreamUp;
+        _pubSubClient.OnStreamDown += HandleStreamDown;
+        _pubSubClient.OnBitsReceivedV2 += HandleBitsReceivedV2;
+        _pubSubClient.OnChannelSubscription += HandleChannelSubscription;
+        _pubSubClient.OnChannelPointsRewardRedeemed += HandleChannelPointsRewardRedeemed;
+        _pubSubClient.OnFollow += HandleFollow;
+        _pubSubClient.OnHost += HandleHost;
+        _pubSubClient.OnListenResponse += HandleListenResponse;
     }
 
     private void UnsubscribeFromEvents()
     {
-        //_twitchChatClient.OnRaidNotification -= HandleRaidNotification;
-        //_twitchChatClient.OnBeingHosted -= HandleBeingHosted;
-        //_twitchChatClient.OnNewSubscriber -= HandleNewSubscriber;
-        //_twitchChatClient.OnReSubscriber -= HandleReSubscriber;
-        //_twitchChatClient.OnGiftedSubscription -= HandleGiftedSubscription;
+        _pubSubClient.OnPubSubServiceConnected -= HandlePubSubServiceConnected;
+        _pubSubClient.OnStreamUp -= HandleStreamUp;
+        _pubSubClient.OnStreamDown -= HandleStreamDown;
+        _pubSubClient.OnBitsReceivedV2 -= HandleBitsReceivedV2;
+        _pubSubClient.OnChannelSubscription -= HandleChannelSubscription;
+        _pubSubClient.OnChannelPointsRewardRedeemed -= HandleChannelPointsRewardRedeemed;
+        _pubSubClient.OnFollow -= HandleFollow;
+        _pubSubClient.OnHost -= HandleHost;
+        _pubSubClient.OnListenResponse -= HandleListenResponse;
     }
 
-    private void HandleRaidNotification(object sender, OnRaidNotificationArgs e)
+    private void Connect()
     {
-        //WriteToChatLog("WobbleBot",
-        //    $"Received raid from: {e.RaidNotification.DisplayName}");
-        //var eventMessage =
-        //    _twitchEventHandlers.FirstOrDefault(t => t.EventName.Matches("Raid"));
+        RaiseLogMessage("Start connecting");
 
-        //if (eventMessage == null)
-        //{
-        //    ChatConnector.SendChatMessage($"{e.RaidNotification.DisplayName}, thank you for raiding!");
-        //}
-        //else
-        //{
-        //    SendChatMessage(eventMessage.Message
-        //        .Replace("{raiderDisplayName}", e.RaidNotification.DisplayName));
-        //}
+        _pubSubClient.ListenToBitsEventsV2(_channelId);
+        _pubSubClient.ListenToChannelPoints(_channelId);
+        _pubSubClient.ListenToFollows(_channelId);
+        _pubSubClient.ListenToSubscriptions(_channelId);
+        _pubSubClient.ListenToRaid(_channelId);
+        _pubSubClient.SendTopics(_broadcasterAccount.AuthToken);
+
+        _pubSubClient.Connect();
+
+        RaiseLogMessage("Connection completed");
     }
 
-    private void HandleBeingHosted(object sender, OnBeingHostedArgs e)
+    #region Private TwitchPubSub event handler functions
+
+    private void HandlePubSubServiceConnected(object sender, EventArgs e)
     {
-        //WriteToChatLog("WobbleBot",
-        //    $"Received host from: {e.BeingHostedNotification.HostedByChannel}");
-        //var eventMessage =
-        //    _twitchEventHandlers.FirstOrDefault(t => t.EventName.Matches("Host"));
-
-        //if (eventMessage == null)
-        //{
-        //    SendChatMessage($"Thank you for hosting {e.BeingHostedNotification.HostedByChannel}!");
-        //}
-        //else
-        //{
-        //    SendChatMessage(eventMessage.Message
-        //        .Replace("{hostChannelName}", e.BeingHostedNotification.HostedByChannel));
-        //}
+        RaiseLogMessage("Connected");
     }
 
-    private void HandleNewSubscriber(object sender, OnNewSubscriberArgs e)
+    private void HandleStreamUp(object sender, OnStreamUpArgs e)
     {
-        //SendChatMessage(e.Subscriber.SubscriptionPlan == SubscriptionPlan.Prime
-        //    ? $"{e.Subscriber.DisplayName}, thank you for subscribing with Prime!"
-        //    : $"{e.Subscriber.DisplayName}, thank you for subscribing!");
+        RaiseLogMessage("Stream up");
     }
 
-    private void HandleReSubscriber(object sender, OnReSubscriberArgs e)
+    private void HandleStreamDown(object sender, OnStreamDownArgs e)
     {
-        //SendChatMessage(e.ReSubscriber.SubscriptionPlan == SubscriptionPlan.Prime
-        //    ? $"{e.ReSubscriber.DisplayName}, thank you for re-subscribing with Prime!"
-        //    : $"{e.ReSubscriber.DisplayName}, thank you for re-subscribing!");
+        RaiseLogMessage("Stream down");
     }
 
-    private void HandleGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
+    private void HandleListenResponse(object sender, 
+        OnListenResponseArgs e)
     {
-        //SendChatMessage($"Welcome to the channel {e.GiftedSubscription.MsgParamRecipientDisplayName}!");
+        RaiseLogMessage("Stream down");
     }
 
-    private void OnMonitorTwitchEventsServiceConnected(object sender, EventArgs e)
+    private void HandleBitsReceivedV2(object sender, 
+        OnBitsReceivedV2Args e)
     {
-        //string channelId =
-        //    ApiHelpers.GetChannelId(_botSettings.TwitchBroadcasterAccount.AuthToken,
-        //        _botSettings.TwitchBroadcasterAccount.Name);
-
-        //_twitchEventWatcherClient.ListenToChannelPoints(channelId);
-        //_twitchEventWatcherClient.SendTopics(_botSettings.TwitchBroadcasterAccount.AuthToken);
-
-        //LogMessage("Connected to PubSub");
+        RaiseLogMessage("Bits received");
     }
 
-    private void OnChannelPointsRewardRedeemed(object sender,
-        TwitchLib.PubSub.Events.OnChannelPointsRewardRedeemedArgs e)
+    private void HandleChannelSubscription(object sender, 
+        OnChannelSubscriptionArgs e)
     {
-        //Console.WriteLine($"{e.RewardRedeemed.Redemption.Reward.Cost} channel points redeemed ");
+        RaiseLogMessage("Channel subscription");
     }
+
+    private void HandleChannelPointsRewardRedeemed(object sender, 
+        OnChannelPointsRewardRedeemedArgs e)
+    {
+        RaiseLogMessage("Channel points redeemed");
+    }
+
+    private void HandleFollow(object sender, OnFollowArgs e)
+    {
+        RaiseLogMessage("Follow");
+    }
+
+    private void HandleHost(object sender, OnHostArgs e)
+    {
+        RaiseLogMessage("Host");
+    }
+
+    #endregion
+
+    #region Private support functions
 
     private void RaiseLogMessage(string message,
         Enums.LogMessageLevel level = Enums.LogMessageLevel.Information)
     {
-        OnMessageToLog?.Invoke(this, new LogMessageEventArgs(level, message));
+        OnMessageToLog?.Invoke(this, 
+            new LogMessageEventArgs(level, $"[TwitchPubSubConnector] {message}"));
     }
+
+    #endregion
 }
