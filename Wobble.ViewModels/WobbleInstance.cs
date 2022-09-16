@@ -18,10 +18,10 @@ public class WobbleInstance
 
     public WobbleInstance(BotSettings botSettings)
     {
-        //var pubSubConnector = 
-        //    new TwitchPubSubConnector(botSettings);
-        //pubSubConnector.OnMessageToLog += HandleLogMessageRaised;
-        //pubSubConnector.Start();
+        var pubSubConnector =
+            new TwitchPubSubConnector(botSettings);
+        pubSubConnector.OnMessageToLog += HandleLogMessageRaised;
+        pubSubConnector.Start();
 
         ChatConnector =
             new TwitchChatConnector(botSettings,
@@ -58,8 +58,8 @@ public class WobbleInstance
         if(string.IsNullOrWhiteSpace(phrase))
         {
             phrase = minutes == 1
-                ? $"Attention. The timer is up. 1 minute has passed"
-                : $"Attention. The timer is up. {minutes} minutes have passed";
+                ? "Attention. 1 minute has passed"
+                : $"Attention. {minutes} minutes have passed";
         }
 
         Task.Delay(TimeSpan.FromMinutes(minutes))
