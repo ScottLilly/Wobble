@@ -20,6 +20,7 @@ public class TwitchAccount
     public string Type { get; set; }
     public string Name { get; set; }
     public string AuthToken { get; set; }
+    public string PubSubToken { get; set; }
 }
 
 public class AzureAccount

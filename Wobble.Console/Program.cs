@@ -139,6 +139,12 @@ WobbleInstance SetupWobbleInstance()
                 .FirstOrDefault(sta =>
                     sta.Type.Matches(twitchAccount.Type) &&
                     sta.Name.Matches(twitchAccount.Name))?.AuthToken ?? "";
+
+        twitchAccount.PubSubToken =
+            secretsTwitchAccounts
+                .FirstOrDefault(sta =>
+                    sta.Type.Matches(twitchAccount.Type) &&
+                    sta.Name.Matches(twitchAccount.Name))?.PubSubToken ?? "";
     }
 
     BotSettings botSettings =
