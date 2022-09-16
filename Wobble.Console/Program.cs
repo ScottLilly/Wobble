@@ -36,7 +36,6 @@ do
         Console.WriteLine("!slowmodeoff         Turn slow mode off");
         Console.WriteLine("!additionalcommands  Show additional commands");
         Console.WriteLine("!timer <n [minutes]> <phrase [optional]>");
-        //Console.WriteLine("!title <title>      Change the stream title to <title>");
     }
     else
     {
@@ -45,7 +44,7 @@ do
         switch (commandWords[0].ToLowerInvariant())
         {
             case "!commands":
-                wobbleInstance.ChatConnector.DisplayCommandTriggerWords();
+                wobbleInstance.DisplayCommandTriggerWords();
                 break;
             case "!clear":
                 wobbleInstance.ChatConnector.ClearChat();
@@ -75,7 +74,7 @@ do
                 wobbleInstance.ChatConnector.SlowModeOff();
                 break;
             case "!additionalcommands":
-                foreach (ChatResponse additionalCommand in wobbleInstance.ChatConnector.AdditionalCommands)
+                foreach (ChatResponse additionalCommand in wobbleInstance.AdditionalCommands)
                 {
                     Console.WriteLine($"Command: {string.Join(" ", additionalCommand.CommandTriggers)}");
                 }

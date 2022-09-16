@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using TwitchLib.Client.Models;
 using Wobble.Core;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -17,7 +17,7 @@ public class CounterResponse : IChatCommandHandler
         _replies = replies;
     }
 
-    public string GetResponse(string botDisplayName, ChatCommand chatCommand)
+    public string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs)
     {
         return _replies.Count == 0
             ? ""

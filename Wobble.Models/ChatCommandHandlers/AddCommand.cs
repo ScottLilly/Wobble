@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TwitchLib.Client.Models;
 using Wobble.Core;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -9,32 +9,32 @@ public class AddCommand : IChatCommandHandler
 {
     private readonly List<IChatCommandHandler> _chatCommandHandlers;
 
-    public List<string> CommandTriggers { get; } = new() { "addcommand" };
+    public List<string> CommandTriggers => new() { "addcommand" };
 
     public AddCommand(List<IChatCommandHandler> chatCommandHandlers)
     {
         _chatCommandHandlers = chatCommandHandlers;
     }
 
-    public string GetResponse(string botDisplayName, ChatCommand chatCommand)
+    public string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs)
     {
-        if (!chatCommand.ChatMessage.IsBroadcaster &&
-            !chatCommand.ChatMessage.IsModerator &&
-            !chatCommand.ChatMessage.IsVip)
+        if (!commandArgs.IsBroadcaster &&
+            !commandArgs.IsModerator &&
+            !commandArgs.IsVip)
         {
             return "Additional commands can only be added by the streamer, mods, or VIPs";
         }
 
-        string triggerWord = chatCommand.ArgumentsAsList[0];
-        var response = string.Join(" ", chatCommand.ArgumentsAsList.Skip(1));
+        string triggerWord = commandArgs.Argument.Split(' ')[0];
+        var response = string.Join(" ", commandArgs.Argument.Split(' ').Skip(1));
 
         var existingCommandHandler =
             _chatCommandHandlers.FirstOrDefault(cch => cch.CommandTriggers.Any(ct => ct.Matches(triggerWord)));
 
         if (existingCommandHandler != null)
         {
-            if (chatCommand.ChatMessage.IsBroadcaster ||
-                chatCommand.ChatMessage.IsModerator)
+            if (commandArgs.IsBroadcaster ||
+                commandArgs.IsModerator)
             {
                 _chatCommandHandlers.Remove(existingCommandHandler);
             }

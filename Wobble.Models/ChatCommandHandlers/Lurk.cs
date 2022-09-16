@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using TwitchLib.Client.Models;
 using Wobble.Core;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -10,32 +10,29 @@ public class Lurk : IWobbleCommandHandler
 
     public List<string> CommandTriggers => new() { "lurk", "unlurk" };
 
-    public string GetResponse(string botDisplayName, ChatCommand chatCommand)
+    public string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs)
     {
-        string triggerWord = chatCommand.CommandText;
-        string chatterName = chatCommand.ChatMessage.DisplayName;
-
-        if (triggerWord.Matches("lurk"))
+        if (commandArgs.CommandName.Matches("lurk"))
         {
-            if (_lurkers.Contains(chatterName))
+            if (_lurkers.Contains(commandArgs.ChatterName))
             {
                 // Chatter already ran !lurk, without doing an !unlurk
-                return $"{chatterName} gets really worried about the number of bugs and leaves to buy donuts for the rest of chat.";
+                return $"{commandArgs.ChatterName} gets really worried about the number of bugs and leaves to buy donuts for the rest of chat.";
             }
 
-            _lurkers.Add(chatterName);
+            _lurkers.Add(commandArgs.ChatterName);
 
-            return $"{chatterName} sees all the bugs that need to be fixed and sneaks away to the coffee shop.";
+            return $"{commandArgs.ChatterName} sees all the bugs that need to be fixed and sneaks away to the coffee shop.";
         }
 
-        if (triggerWord.Matches("unlurk"))
+        if (commandArgs.CommandName.Matches("unlurk"))
         {
-            if (_lurkers.Contains(chatterName))
+            if (_lurkers.Contains(commandArgs.ChatterName))
             {
-                _lurkers.Remove(chatterName);
+                _lurkers.Remove(commandArgs.ChatterName);
             }
 
-            return $"{chatterName} sees all the bugs are fixed and returns to chat.";
+            return $"{commandArgs.ChatterName} sees all the bugs are fixed and returns to chat.";
         }
 
         return "";

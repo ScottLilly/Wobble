@@ -4,22 +4,21 @@ using TwitchLib.PubSub.Events;
 using Wobble.Core;
 using Wobble.Models.CustomEventArgs;
 
-namespace Wobble.Models;
+namespace Wobble.Models.ChatConnectors;
 
 public class TwitchPubSubConnector
 {
     private readonly TwitchAccount _broadcasterAccount;
     private readonly TwitchPubSub _pubSubClient;
-    private string ChannelName => _broadcasterAccount.Name;
 
-    public event EventHandler<LogMessageEventArgs> OnMessageToLog;
+    public event EventHandler<LogMessageEventArgs> OnLogMessageRaised;
 
     public TwitchPubSubConnector(BotSettings botSettings)
     {
         _broadcasterAccount = botSettings.TwitchBroadcasterAccount;
 
-        var channelId = 
-            ApiHelpers.GetChannelId(_broadcasterAccount.AuthToken, ChannelName);
+        var channelId =
+            ApiHelpers.GetChannelId(_broadcasterAccount.AuthToken, _broadcasterAccount.Name);
 
         _pubSubClient = new TwitchPubSub();
 
@@ -34,15 +33,20 @@ public class TwitchPubSubConnector
     public void Start()
     {
         RaiseLogMessage("Starting");
+        
         Connect();
+        
         RaiseLogMessage("Started");
     }
 
     public void Stop()
     {
         RaiseLogMessage("Stopping");
+
         UnsubscribeFromEvents();
+
         _pubSubClient.Disconnect();
+
         RaiseLogMessage("Stopped");
     }
 
@@ -75,13 +79,13 @@ public class TwitchPubSubConnector
         RaiseLogMessage($"Follow: {e.DisplayName}");
     }
 
-    private void HandleSubscription(object sender, 
+    private void HandleSubscription(object sender,
         OnChannelSubscriptionArgs e)
     {
         RaiseLogMessage($"Subscribed: {e.Subscription.Username}");
     }
 
-    private void HandleChannelPointsRewardRedeemed(object sender, 
+    private void HandleChannelPointsRewardRedeemed(object sender,
         OnChannelPointsRewardRedeemedArgs e)
     {
         RaiseLogMessage($"Channel points redeemed: {e.RewardRedeemed.Redemption.User.DisplayName} {e.RewardRedeemed.Redemption.Reward.Title} {e.RewardRedeemed.Redemption.Reward.Cost}");
@@ -127,17 +131,17 @@ public class TwitchPubSubConnector
 
     private void Connect()
     {
-        RaiseLogMessage("Start connecting");
+        RaiseLogMessage("Connecting");
 
         _pubSubClient.Connect();
 
-        RaiseLogMessage("Connection completed");
+        RaiseLogMessage("Connected");
     }
 
     private void RaiseLogMessage(string message,
         Enums.LogMessageLevel level = Enums.LogMessageLevel.Information)
     {
-        OnMessageToLog?.Invoke(this, 
+        OnLogMessageRaised?.Invoke(this,
             new LogMessageEventArgs(level, $"[TwitchPubSubConnector] {message}"));
     }
 
