@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using TwitchLib.Client.Models;
 using Wobble.Core;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -14,7 +14,8 @@ public class ChatResponse : IChatCommandHandler
     public bool IsAdditionalCommand { get; }
 
     public ChatResponse(List<string> commandTriggers, List<string> responses,
-        bool isAdditionalCommand = false, bool requiresArgument = false, string missingArgumentMessage = "")
+        bool isAdditionalCommand = false, bool requiresArgument = false, 
+        string missingArgumentMessage = "")
     {
         CommandTriggers = commandTriggers;
 
@@ -24,21 +25,22 @@ public class ChatResponse : IChatCommandHandler
         _missingArgumentMessage = missingArgumentMessage;
     }
 
-    public string GetResponse(string botDisplayName, ChatCommand chatCommand)
+    public string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs)
     {
         if (Responses.Count == 0)
         {
             return "";
         }
 
-        if (_requiresArgument && string.IsNullOrWhiteSpace(chatCommand.ArgumentsAsString))
+        if (_requiresArgument && 
+            string.IsNullOrWhiteSpace(commandArgs.Argument))
         {
             return _missingArgumentMessage;
         }
 
         // Don't include chatterDisplayName in response when the chatter is the bot
-        return chatCommand?.ChatMessage?.DisplayName == null
+        return string.IsNullOrWhiteSpace(commandArgs.ChatterName)
             ? Responses.RandomElement()
-            : $"{chatCommand.ChatMessage.DisplayName} {Responses.RandomElement()}";
+            : $"{commandArgs.ChatterName} {Responses.RandomElement()}";
     }
 }

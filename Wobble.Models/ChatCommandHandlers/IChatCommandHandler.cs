@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using TwitchLib.Client.Models;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -7,5 +7,5 @@ public interface IChatCommandHandler
 {
     List<string> CommandTriggers { get; }
 
-    string GetResponse(string botDisplayName, ChatCommand chatCommand);
+    string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs);
 }

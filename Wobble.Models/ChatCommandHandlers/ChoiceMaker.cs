@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TwitchLib.Client.Models;
 using Wobble.Core;
+using Wobble.Models.ChatConnectors;
 
 namespace Wobble.Models.ChatCommandHandlers;
 
@@ -9,10 +9,10 @@ public class ChoiceMaker : IWobbleCommandHandler
 {
     public List<string> CommandTriggers => new() { "choose" };
 
-    public string GetResponse(string botDisplayName, ChatCommand chatCommand)
+    public string GetResponse(string botDisplayName, TwitchChatCommandArgs commandArgs)
     {
-        string chatterName = chatCommand.ChatMessage.DisplayName;
-        string args = chatCommand.ArgumentsAsString;
+        string chatterName = commandArgs.ChatterName;
+        string args = commandArgs.Argument;
 
         // Handle null or empty arguments
         if (args == null || string.IsNullOrWhiteSpace(args))
