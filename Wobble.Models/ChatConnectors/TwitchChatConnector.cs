@@ -11,7 +11,7 @@ using Wobble.Core;
 using Wobble.Models.ChatCommandHandlers;
 using Wobble.Models.CustomEventArgs;
 
-namespace Wobble.Models;
+namespace Wobble.Models.ChatConnectors;
 
 public class TwitchChatConnector
 {
@@ -25,9 +25,9 @@ public class TwitchChatConnector
     private Timer _timedMessagesTimer;
     private bool _hasConnected;
 
-    private string ChannelName => 
+    private string ChannelName =>
         _botSettings.TwitchBroadcasterAccount.Name;
-    private string BotName => 
+    private string BotName =>
         _botSettings.TwitchBotAccount.Name;
 
     public CounterData CounterData { get; }
@@ -42,7 +42,7 @@ public class TwitchChatConnector
     public event EventHandler OnCounterDataChanged;
     public event EventHandler OnWobblePointsDataChanged;
 
-    public TwitchChatConnector(BotSettings botSettings, 
+    public TwitchChatConnector(BotSettings botSettings,
         CounterData counterData, WobblePointsData wobblePointsData)
     {
         _botSettings = botSettings;
@@ -50,7 +50,7 @@ public class TwitchChatConnector
         CounterData = counterData;
         WobblePointsData = wobblePointsData;
 
-        var connectionCredentials = 
+        var connectionCredentials =
             new ConnectionCredentials(
                 _botSettings.TwitchBotAccount.Name,
                 _botSettings.TwitchBotAccount.AuthToken,
@@ -81,7 +81,7 @@ public class TwitchChatConnector
     public void DisplayCommandTriggerWords()
     {
         var triggerWords =
-            string.Join(", ", 
+            string.Join(", ",
                 _chatCommandHandlers
                     .SelectMany(cch => cch.CommandTriggers)
                     .Select(cch => $"!{cch.ToLowerInvariant()}")
@@ -161,7 +161,7 @@ public class TwitchChatConnector
         Connect();
     }
 
-    private void HandleTimedMessagesTimerElapsed(object sender, 
+    private void HandleTimedMessagesTimerElapsed(object sender,
         ElapsedEventArgs e)
     {
         var message =
@@ -183,7 +183,7 @@ public class TwitchChatConnector
         }
     }
 
-    private void HandleChatMessageReceived(object sender, 
+    private void HandleChatMessageReceived(object sender,
         OnMessageReceivedArgs e)
     {
         RaiseLogMessage($"[{e.ChatMessage.DisplayName}] {e.ChatMessage.Message}");
@@ -196,7 +196,7 @@ public class TwitchChatConnector
         }
     }
 
-    private void HandleChatCommandReceived(object sender, 
+    private void HandleChatCommandReceived(object sender,
         OnChatCommandReceivedArgs e)
     {
         if (e.Command.CommandText.Matches("commands"))
@@ -205,7 +205,7 @@ public class TwitchChatConnector
             return;
         }
 
-        IChatCommandHandler command = 
+        IChatCommandHandler command =
             GetChatCommandHandler(e.Command.CommandText);
 
         if (command == null)
@@ -353,7 +353,7 @@ public class TwitchChatConnector
             .Replace("{counter}", commandCounter.Count.ToString("N0"));
     }
 
-    private void RaiseLogMessage(string message, 
+    private void RaiseLogMessage(string message,
         Enums.LogMessageLevel level = Enums.LogMessageLevel.Information)
     {
         OnLogMessageRaised?.Invoke(this, new LogMessageEventArgs(level, message));

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Wobble.Core;
 using Wobble.Models;
+using Wobble.Models.ChatConnectors;
 using Wobble.Models.CustomEventArgs;
 using Wobble.Services;
 
@@ -10,8 +10,6 @@ namespace Wobble.ViewModels;
 
 public class WobbleInstance
 {
-    private const string CHAT_LOG_DIRECTORY = "./ChatLogs";
-
     private readonly SpeechService _speechService;
 
     public TwitchChatConnector ChatConnector { get; }
@@ -69,17 +67,7 @@ public class WobbleInstance
     private void HandleLogMessageRaised(object sender, LogMessageEventArgs e)
     {
         Console.WriteLine(e.Message);
-
-        if (!Directory.Exists(CHAT_LOG_DIRECTORY))
-        {
-            Directory.CreateDirectory(CHAT_LOG_DIRECTORY);
-        }
-
-        string logFileName = 
-            Path.Combine(CHAT_LOG_DIRECTORY, $"Wobble-{DateTime.Now:yyyy-MM-dd}.log");
-
-        File.AppendAllText(logFileName,
-            $"{DateTime.Now.ToShortTimeString()}: {e.Message}{Environment.NewLine}");
+        LoggingService.WriteMessage(e.Message);
     }
 
     private void HandleCounterDataChanged(object sender, EventArgs e)
