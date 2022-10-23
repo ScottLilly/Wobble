@@ -18,7 +18,7 @@ public static class LoggingService
     public static void LogMessage(string message)
     {
         File.AppendAllText(
-            Path.Combine(CHAT_LOG_DIRECTORY, $"MegaCorpClash-{DateTime.Now:yyyy-MM-dd}.log"),
+            Path.Combine(CHAT_LOG_DIRECTORY, $"Wobble-{DateTime.Now:yyyy-MM-dd}.log"),
             $"{message}{Environment.NewLine}");
     }
 }
